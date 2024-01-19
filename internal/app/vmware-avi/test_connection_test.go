@@ -65,7 +65,7 @@ func TestConnectionTest(t *testing.T) {
 		err = whService.HandleTestConnection(ctx)
 		require.NoError(t, err)
 
-		response := recorder.Result()
+		response := recorder.Result() //nolint:bodyclose
 		defer func() {
 			_ = response.Body.Close()
 		}()

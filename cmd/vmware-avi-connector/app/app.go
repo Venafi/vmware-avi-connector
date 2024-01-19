@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// New ...
 func New() *fx.App {
 	var logger *zap.Logger
 

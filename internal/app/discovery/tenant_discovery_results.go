@@ -2,19 +2,19 @@ package discovery
 
 type tenantDiscoveryResults struct {
 	Discovered int
-	TenantMap  map[string][]*discoveredCertificateAndUrl
+	TenantMap  map[string][]*discoveredCertificateAndURL
 }
 
 func newTenantDiscoveryResults() *tenantDiscoveryResults {
 	return &tenantDiscoveryResults{
 		Discovered: 0,
-		TenantMap:  map[string][]*discoveredCertificateAndUrl{},
+		TenantMap:  map[string][]*discoveredCertificateAndURL{},
 	}
 }
 
-func (tdr *tenantDiscoveryResults) append(tenant string, dcc []*discoveredCertificateAndUrl) {
+func (tdr *tenantDiscoveryResults) append(tenant string, dcc []*discoveredCertificateAndURL) {
 	var ok bool
-	var existing []*discoveredCertificateAndUrl
+	var existing []*discoveredCertificateAndURL //nolint:prealloc
 
 	existing, ok = tdr.TenantMap[tenant]
 	if !ok {

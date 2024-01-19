@@ -11,6 +11,7 @@ import (
 	"github.com/vmware/alb-sdk/go/models"
 )
 
+// TenantNames represents ...
 type TenantNames []string
 
 func (tenants TenantNames) contains(tenant string) bool {
@@ -37,7 +38,7 @@ func getCertificateName(certificate *models.SSLKeyAndCertificate) string {
 	}
 
 	if certificate.URL != nil {
-		id, err := getUuidFromUrl(*certificate.URL)
+		id, err := getUUIDFromURL(*certificate.URL)
 		if err == nil {
 			return id
 		}
@@ -46,20 +47,15 @@ func getCertificateName(certificate *models.SSLKeyAndCertificate) string {
 	return "missing name"
 }
 
-func getUuidFromUrl(rawURL string) (string, error) {
+func getUUIDFromURL(rawURL string) (string, error) {
 	u, err := url.Parse(rawURL)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse entity URL \"%s\": %w", rawURL, err)
 	}
 
 	path := strings.TrimSpace(u.Path)
-	if strings.HasPrefix(path, "/") {
-		path = path[1:]
-	}
-
-	if strings.HasSuffix(path, "/") {
-		path = path[:len(path)-1]
-	}
+	path = strings.TrimPrefix(path, "/")
+	path = strings.TrimSuffix(path, "/")
 
 	components := strings.Split(path, "/")
 	return components[len(components)-1], nil
@@ -91,7 +87,7 @@ func getVirtualServiceName(virtualService *models.VirtualService) string {
 	}
 
 	if virtualService.URL != nil {
-		id, err := getUuidFromUrl(*virtualService.URL)
+		id, err := getUUIDFromURL(*virtualService.URL)
 		if err == nil {
 			return id
 		}

@@ -28,7 +28,7 @@ type ClientServices interface {
 	// GetAllVirtualServices will return a collection of VirtualService objects
 	GetAllVirtualServices(client *domain.Client, options ...session.ApiOptionsParams) ([]*models.VirtualService, error)
 	// GetSSLKeyAndCertificateById will return an existing SSLKeyAndCertificate by name
-	GetSSLKeyAndCertificateById(client *domain.Client, uuid string, options ...session.ApiOptionsParams) (*models.SSLKeyAndCertificate, error)
+	GetSSLKeyAndCertificateByID(client *domain.Client, uuid string, options ...session.ApiOptionsParams) (*models.SSLKeyAndCertificate, error)
 	// GetSSLKeyAndCertificateByName will return an existing SSLKeyAndCertificate by name
 	GetSSLKeyAndCertificateByName(client *domain.Client, name string, options ...session.ApiOptionsParams) (*models.SSLKeyAndCertificate, error)
 	// GetVirtualServiceByName will return an existing VirtualService by name
@@ -39,7 +39,7 @@ type ClientServices interface {
 	UpdateVirtualService(client *domain.Client, obj *models.VirtualService, options ...session.ApiOptionsParams) (*models.VirtualService, error)
 }
 
-// VMwareAviClientsImpl
+// VMwareAviClientsImpl represents ...
 type VMwareAviClientsImpl struct {
 }
 
@@ -147,8 +147,8 @@ func (c *VMwareAviClientsImpl) GetAllVirtualServices(client *domain.Client, opti
 	return unwrapped.VirtualService.GetAll(options...)
 }
 
-// GetSSLKeyAndCertificateById will return an existing SSLKeyAndCertificate by name
-func (c *VMwareAviClientsImpl) GetSSLKeyAndCertificateById(client *domain.Client, uuid string, options ...session.ApiOptionsParams) (*models.SSLKeyAndCertificate, error) {
+// GetSSLKeyAndCertificateByID will return an existing SSLKeyAndCertificate by name
+func (c *VMwareAviClientsImpl) GetSSLKeyAndCertificateByID(client *domain.Client, uuid string, options ...session.ApiOptionsParams) (*models.SSLKeyAndCertificate, error) {
 	unwrapped, ok := client.Session.(*clients.AviClient)
 	if !ok {
 		return nil, errors.New("invalid session")

@@ -50,6 +50,7 @@ func ConfigureHTTPServers(lifecycle fx.Lifecycle, shutdowner fx.Shutdowner) (*ec
 	return e, nil
 }
 
+// RegisterHandlers will ...
 func RegisterHandlers(e *echo.Echo, whService WebhookService) error {
 	e.GET("/healthz", func(c echo.Context) error {
 		return c.String(http.StatusOK, "OK")

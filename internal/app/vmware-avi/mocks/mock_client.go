@@ -142,24 +142,24 @@ func (mr *MockClientServicesMockRecorder) GetAllVirtualServices(client interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllVirtualServices", reflect.TypeOf((*MockClientServices)(nil).GetAllVirtualServices), varargs...)
 }
 
-// GetSSLKeyAndCertificateById mocks base method.
-func (m *MockClientServices) GetSSLKeyAndCertificateById(client *domain.Client, uuid string, options ...session.ApiOptionsParams) (*models.SSLKeyAndCertificate, error) {
+// GetSSLKeyAndCertificateByID mocks base method.
+func (m *MockClientServices) GetSSLKeyAndCertificateByID(client *domain.Client, uuid string, options ...session.ApiOptionsParams) (*models.SSLKeyAndCertificate, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{client, uuid}
 	for _, a := range options {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "GetSSLKeyAndCertificateById", varargs...)
+	ret := m.ctrl.Call(m, "GetSSLKeyAndCertificateByID", varargs...)
 	ret0, _ := ret[0].(*models.SSLKeyAndCertificate)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetSSLKeyAndCertificateById indicates an expected call of GetSSLKeyAndCertificateById.
-func (mr *MockClientServicesMockRecorder) GetSSLKeyAndCertificateById(client, uuid interface{}, options ...interface{}) *gomock.Call {
+// GetSSLKeyAndCertificateByID indicates an expected call of GetSSLKeyAndCertificateByID.
+func (mr *MockClientServicesMockRecorder) GetSSLKeyAndCertificateByID(client, uuid interface{}, options ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{client, uuid}, options...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSSLKeyAndCertificateById", reflect.TypeOf((*MockClientServices)(nil).GetSSLKeyAndCertificateById), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSSLKeyAndCertificateByID", reflect.TypeOf((*MockClientServices)(nil).GetSSLKeyAndCertificateByID), varargs...)
 }
 
 // GetSSLKeyAndCertificateByName mocks base method.

@@ -83,7 +83,7 @@ func (p *certificateDiscoveryProcessor) addCaCertificates(client *domain.Client,
 		}
 
 		var id string
-		id, err = getUuidFromUrl(*caCert.CaRef)
+		id, err = getUUIDFromURL(*caCert.CaRef)
 		if err != nil {
 			zap.L().Info("unable to parse CA Certificate reference", zap.String("hostname", p.connection.HostnameOrAddress), zap.Int("port", p.connection.Port), zap.String("tenant", client.Tenant), zap.String("name", certificateName), zap.Error(err))
 			return
@@ -98,7 +98,7 @@ func (p *certificateDiscoveryProcessor) addCaCertificates(client *domain.Client,
 		}
 
 		var cac *models.SSLKeyAndCertificate
-		cac, err = p.clientServices.GetSSLKeyAndCertificateById(client, id)
+		cac, err = p.clientServices.GetSSLKeyAndCertificateByID(client, id)
 		if err != nil {
 			zap.L().Info("failed to retrieve CA Certificate by reference", zap.String("hostname", p.connection.HostnameOrAddress), zap.Int("port", p.connection.Port), zap.String("tenant", client.Tenant), zap.String("name", certificateName), zap.String("reference", *caCert.CaRef), zap.Error(err))
 			return
@@ -119,10 +119,9 @@ func (p *certificateDiscoveryProcessor) addCaCertificates(client *domain.Client,
 	}
 
 	dc.CertificateChain = chain
-	return
 }
 
-func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *DiscoveryPage) (finished bool, results []*discoveredCertificateAndUrl, err error) {
+func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *DiscoveryPage) (finished bool, results []*discoveredCertificateAndURL, err error) {
 	defer func() {
 		if !finished {
 			data, _ := json.Marshal(p.paginator)
@@ -146,7 +145,7 @@ func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *Di
 		}
 	}
 
-	discoveredCertificates := make([]*discoveredCertificateAndUrl, 0)
+	discoveredCertificates := make([]*discoveredCertificateAndURL, 0)
 
 	for {
 		var ok bool
@@ -227,7 +226,7 @@ func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *Di
 			if cert.UUID != nil {
 				uuid = *cert.UUID
 			} else if cert.URL != nil {
-				uuid, err = getUuidFromUrl(*cert.URL)
+				uuid, err = getUUIDFromURL(*cert.URL)
 				if err != nil {
 					zap.L().Info("skipping certificate with invalid url", zap.String("hostname", p.connection.HostnameOrAddress), zap.Int("port", p.connection.Port), zap.String("tenant", client.Tenant), zap.String("name", getCertificateName(cert)), zap.Error(err))
 					continue
@@ -237,7 +236,7 @@ func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *Di
 				continue
 			}
 
-			dcr := &discoveredCertificateAndUrl{
+			dcr := &discoveredCertificateAndURL{
 				Name:   getCertificateName(cert),
 				Result: dc,
 				UUID:   uuid,

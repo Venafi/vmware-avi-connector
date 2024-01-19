@@ -3,9 +3,8 @@ package vmware_avi
 const (
 	// DefaultTenantName represents the default tenant
 	DefaultTenantName = "admin"
-
-	maximumFileNameLength = 63
 )
 
+// TargetConfiguration represents ...
 type TargetConfiguration struct {
 }

@@ -10,10 +10,12 @@ import (
 	"go.uber.org/zap"
 )
 
+// TestConnectionRequest represents ...
 type TestConnectionRequest struct {
 	Connection *domain.Connection `json:"connection"`
 }
 
+// TestConnectionResponse represents ...
 type TestConnectionResponse struct {
 	Result bool `json:"result"`
 }
@@ -32,8 +34,7 @@ func (svc *WebhookService) HandleTestConnection(c echo.Context) error {
 		Result: false,
 	}
 
-	var client *domain.Client
-	client = svc.ClientServices.NewClient(req.Connection, "")
+	client := svc.ClientServices.NewClient(req.Connection, "")
 	err = svc.ClientServices.Connect(client)
 	defer func() {
 		svc.ClientServices.Close(client)

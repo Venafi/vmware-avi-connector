@@ -1,5 +1,6 @@
 package domain
 
+// Connection represents ...
 type Connection struct {
 	HostnameOrAddress string `json:"hostnameOrAddress"`
 	Password          string `json:"password"`

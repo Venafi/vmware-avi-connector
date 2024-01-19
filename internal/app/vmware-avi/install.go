@@ -16,16 +16,20 @@ import (
 )
 
 const (
-	SslCertificateTypeCA             = "SSL_CERTIFICATE_TYPE_CA"
+	// SslCertificateTypeCA is ...
+	SslCertificateTypeCA = "SSL_CERTIFICATE_TYPE_CA"
+	// SslCertificateTypeVirtualService is ...
 	SslCertificateTypeVirtualService = "SSL_CERTIFICATE_TYPE_VIRTUALSERVICE"
 )
 
+// InstallCertificateBundleRequest represents ...
 type InstallCertificateBundleRequest struct {
 	Connection           *domain.Connection       `json:"connection"`
 	CertificateBundle    domain.CertificateBundle `json:"certificateBundle"`
 	InstallationKeystore domain.Keystore          `json:"keystore"`
 }
 
+// InstallCertificateBundleResponse represents ...
 type InstallCertificateBundleResponse struct {
 	InstallationKeystore domain.Keystore `json:"keystore"`
 }
@@ -39,9 +43,8 @@ func (svc *WebhookService) HandleInstallCertificateBundle(c echo.Context) error 
 	}
 
 	var err error
-	var client *domain.Client
 
-	client = svc.ClientServices.NewClient(req.Connection, req.InstallationKeystore.Tenant)
+	client := svc.ClientServices.NewClient(req.Connection, req.InstallationKeystore.Tenant)
 	err = svc.ClientServices.Connect(client)
 	defer func() {
 		svc.ClientServices.Close(client)
@@ -72,7 +75,7 @@ func (svc *WebhookService) HandleInstallCertificateBundle(c echo.Context) error 
 	return c.JSON(http.StatusOK, &res)
 }
 
-func (svc *WebhookService) installCertificateChain(client *domain.Client, keystore *domain.Keystore, chain [][]byte) error {
+func (svc *WebhookService) installCertificateChain(client *domain.Client, _ *domain.Keystore, chain [][]byte) error {
 	var err error
 
 	for _, der := range chain {
@@ -171,10 +174,10 @@ func (svc *WebhookService) installCertificateAndPrivateKey(client *domain.Client
 		if existing != nil {
 			if identical {
 				return nil
-			} else {
-				zap.L().Error("certificate generated name already exists on VMWare NSX-ALB")
-				return fmt.Errorf("certificate generated name already exists on VMWare NSX-ALB")
 			}
+
+			zap.L().Error("certificate generated name already exists on VMWare NSX-ALB")
+			return fmt.Errorf("certificate generated name already exists on VMWare NSX-ALB")
 		}
 	}
 

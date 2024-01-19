@@ -5,7 +5,6 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
-	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -167,19 +166,19 @@ func pemParse(content []byte) [][]byte {
 
 func init() {
 	collection := pemParse([]byte(certificatePem))
-	if collection != nil && len(collection) > 0 {
+	if len(collection) > 0 {
 		certificateDer = collection[0]
 	}
 
 	var intermediate []byte
 	collection = pemParse([]byte(intermediateIssuerPem))
-	if collection != nil && len(collection) > 0 {
+	if len(collection) > 0 {
 		intermediate = collection[0]
 	}
 
 	var root []byte
 	collection = pemParse([]byte(rootIssuerPem))
-	if collection != nil && len(collection) > 0 {
+	if len(collection) > 0 {
 		root = collection[0]
 	}
 
@@ -191,7 +190,7 @@ func init() {
 	}
 
 	collection = pemParse([]byte(privateKeyPem))
-	if collection != nil && len(collection) > 0 {
+	if len(collection) > 0 {
 		privateKeyDer = collection[0]
 	}
 }
@@ -255,7 +254,7 @@ func TestInstall(t *testing.T) {
 		mockClientServices.EXPECT().
 			GetSSLKeyAndCertificateByName(gomock.Any(), gomock.Any(), gomock.Any()).
 			DoAndReturn(func(client *domain.Client, name string, options ...session.ApiOptionsParams) (*models.SSLKeyAndCertificate, error) {
-				return nil, errors.New(fmt.Sprintf("No object of type sslkeyandcertificate with name %s is found", name))
+				return nil, fmt.Errorf("no object of type sslkeyandcertificate with name %s is found", name)
 			}).
 			Times(3)
 		mockClientServices.EXPECT().
@@ -268,7 +267,7 @@ func TestInstall(t *testing.T) {
 		err = whService.HandleInstallCertificateBundle(ctx)
 		require.NoError(t, err)
 
-		response := recorder.Result()
+		response := recorder.Result() // nolint:bodyclose
 		defer func() {
 			_ = response.Body.Close()
 		}()

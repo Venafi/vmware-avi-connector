@@ -13,16 +13,19 @@ import (
 	"go.uber.org/zap"
 )
 
+// DiscoveryService represents ...
 type DiscoveryService struct {
 	ClientServices vmware_avi.ClientServices
 }
 
+// NewDiscoveryService will ...
 func NewDiscoveryService(clientServices vmware_avi.ClientServices) *DiscoveryService {
 	return &DiscoveryService{
 		ClientServices: clientServices,
 	}
 }
 
+// DiscoverCertificates will ...
 func (svc *DiscoveryService) DiscoverCertificates(c echo.Context) error {
 	var err error
 
@@ -71,9 +74,9 @@ func (svc *DiscoveryService) DiscoverCertificates(c echo.Context) error {
 
 	results := newTenantDiscoveryResults()
 
-	for _, tenant := range tenants {
+	for i, tenant := range tenants {
 		if req.Page.Tenant == nil {
-			req.Page.Tenant = &tenant
+			req.Page.Tenant = &tenants[i]
 		}
 
 		if !strings.EqualFold(tenant, *req.Page.Tenant) {
@@ -127,9 +130,7 @@ func buildResponse(discoveryPage *DiscoveryPage, discoveredResults *tenantDiscov
 }
 
 func (svc *DiscoveryService) getAllTenants(connection *domain.Connection) (tenants TenantNames, err error) {
-	var client *domain.Client
-
-	client = svc.ClientServices.NewClient(connection, vmware_avi.DefaultTenantName)
+	client := svc.ClientServices.NewClient(connection, vmware_avi.DefaultTenantName)
 	err = svc.ClientServices.Connect(client)
 	defer func() {
 		svc.ClientServices.Close(client)
@@ -170,7 +171,7 @@ func (svc *DiscoveryService) runDiscover(client *domain.Client, control *Discove
 	for {
 		control.MaxResults -= results.Discovered
 
-		var discovered []*discoveredCertificateAndUrl
+		var discovered []*discoveredCertificateAndURL
 
 		finished, discovered, err = csp.discover(client, page)
 		if err != nil {

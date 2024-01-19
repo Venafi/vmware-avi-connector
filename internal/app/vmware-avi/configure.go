@@ -12,16 +12,19 @@ import (
 	"go.uber.org/zap"
 )
 
+// ConfigureInstallationEndpointRequest represents ...
 type ConfigureInstallationEndpointRequest struct {
 	Connection *domain.Connection `json:"connection"`
 	Keystore   domain.Keystore    `json:"keystore"`
 	Binding    domain.Binding     `json:"binding"`
 }
 
+// GetTargetConfigurationRequest represents ...
 type GetTargetConfigurationRequest struct {
 	Connection *domain.Connection `json:"connection"`
 }
 
+// GetTargetConfigurationResponse represents ...
 type GetTargetConfigurationResponse struct {
 	TargetConfiguration TargetConfiguration `json:"targetConfiguration"`
 }
@@ -35,9 +38,8 @@ func (svc *WebhookService) HandleConfigureInstallationEndpoint(c echo.Context) e
 	}
 
 	var err error
-	var client *domain.Client
 
-	client = svc.ClientServices.NewClient(req.Connection, req.Keystore.Tenant)
+	client := svc.ClientServices.NewClient(req.Connection, req.Keystore.Tenant)
 	err = svc.ClientServices.Connect(client)
 	defer func() {
 		svc.ClientServices.Close(client)
@@ -95,7 +97,7 @@ func (svc *WebhookService) configureInstallationEndpoint(client *domain.Client, 
 	}
 
 	if kac == nil {
-		return fmt.Errorf("failed to retrieve certificate \"%s\": empty repsonse", keystore.CertificateName)
+		return fmt.Errorf("failed to retrieve certificate \"%s\": empty response", keystore.CertificateName)
 	}
 
 	if kac.URL == nil || len(*kac.URL) == 0 {

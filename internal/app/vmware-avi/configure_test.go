@@ -74,25 +74,25 @@ func TestConfigure(t *testing.T) {
 			GetVirtualServiceByName(gomock.Any(), gomock.Eq("vstest")).
 			DoAndReturn(func(client *domain.Client, name string, options ...session.ApiOptionsParams) (*models.VirtualService, error) {
 				vsn := name
-				vsUuid := "virtualservice:" + uuid.New().String()
+				vsUUID := "virtualservice:" + uuid.New().String()
 
 				vs := &models.VirtualService{
 					Name:                     &vsn,
 					SslKeyAndCertificateRefs: []string{"sslkeyandcertificate:old"},
-					UUID:                     &vsUuid,
+					UUID:                     &vsUUID,
 				}
 				return vs, nil
 			})
 
 		kacn := "installation.test.io"
-		kacUrl := "https://localhost/api/virtualservice/" + kacn
+		kacURL := "https://localhost/api/virtualservice/" + kacn
 
 		mockClientServices.EXPECT().
 			GetSSLKeyAndCertificateByName(gomock.Any(), gomock.Any(), gomock.Any()).
 			DoAndReturn(func(client *domain.Client, name string, options ...session.ApiOptionsParams) (*models.SSLKeyAndCertificate, error) {
 				kac := &models.SSLKeyAndCertificate{
 					Name: &kacn,
-					URL:  &kacUrl,
+					URL:  &kacURL,
 				}
 				return kac, nil
 			})
@@ -102,14 +102,14 @@ func TestConfigure(t *testing.T) {
 			DoAndReturn(func(client *domain.Client, obj *models.VirtualService, options ...session.ApiOptionsParams) (*models.VirtualService, error) {
 				require.NotNil(t, obj)
 				require.True(t, len(obj.SslKeyAndCertificateRefs) == 1)
-				require.Equal(t, kacUrl, obj.SslKeyAndCertificateRefs[0])
+				require.Equal(t, kacURL, obj.SslKeyAndCertificateRefs[0])
 				return obj, nil
 			})
 
 		err = whService.HandleConfigureInstallationEndpoint(ctx)
 		require.NoError(t, err)
 
-		response := recorder.Result()
+		response := recorder.Result() // nolint:bodyclose
 		defer func() {
 			_ = response.Body.Close()
 		}()

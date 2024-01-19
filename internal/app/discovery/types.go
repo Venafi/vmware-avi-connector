@@ -2,7 +2,7 @@ package discovery
 
 import "github.com/venafi/vmware-avi-connector/internal/app/domain"
 
-type discoveredCertificateAndUrl struct {
+type discoveredCertificateAndURL struct {
 	Name   string
 	Result *DiscoveredCertificate
 	UUID   string
@@ -54,7 +54,7 @@ type DiscoveredCertificate struct {
 // CertificateInstallation represents usage of a discovered certificate
 type CertificateInstallation struct {
 	Hostname  string `json:"hostname"`
-	IpAddress string `json:"ipAddress"`
+	IPAddress string `json:"ipAddress"`
 	Port      int    `json:"port"`
 }
 

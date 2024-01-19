@@ -11,8 +11,8 @@ func TestTenantDiscoveryResults(t *testing.T) {
 		tdr := newTenantDiscoveryResults()
 		require.NotNil(t, tdr)
 
-		tdr.append("third", []*discoveredCertificateAndUrl{
-			&discoveredCertificateAndUrl{
+		tdr.append("third", []*discoveredCertificateAndURL{
+			&discoveredCertificateAndURL{
 				Name: "31",
 				Result: &DiscoveredCertificate{
 					Certificate: "c-31",
@@ -21,15 +21,15 @@ func TestTenantDiscoveryResults(t *testing.T) {
 			},
 		})
 
-		tdr.append("second", []*discoveredCertificateAndUrl{
-			&discoveredCertificateAndUrl{
+		tdr.append("second", []*discoveredCertificateAndURL{
+			&discoveredCertificateAndURL{
 				Name: "20",
 				Result: &DiscoveredCertificate{
 					Certificate: "c-2-a",
 				},
 				UUID: "86d0b1b5-4e6c-40f3-9a2f-cf2e271d61fe",
 			},
-			&discoveredCertificateAndUrl{
+			&discoveredCertificateAndURL{
 				Name: "21",
 				Result: &DiscoveredCertificate{
 					Certificate: "c-2-b",
@@ -38,8 +38,8 @@ func TestTenantDiscoveryResults(t *testing.T) {
 			},
 		})
 
-		tdr.append("first", []*discoveredCertificateAndUrl{
-			&discoveredCertificateAndUrl{
+		tdr.append("first", []*discoveredCertificateAndURL{
+			&discoveredCertificateAndURL{
 				Name: "1",
 				Result: &DiscoveredCertificate{
 					Certificate: "c-1",
@@ -48,8 +48,8 @@ func TestTenantDiscoveryResults(t *testing.T) {
 			},
 		})
 
-		tdr.append("third", []*discoveredCertificateAndUrl{
-			&discoveredCertificateAndUrl{
+		tdr.append("third", []*discoveredCertificateAndURL{
+			&discoveredCertificateAndURL{
 				Name: "32",
 				Result: &DiscoveredCertificate{
 					Certificate: "c-32",

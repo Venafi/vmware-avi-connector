@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func processVirtualServices(client *domain.Client, clientServices vmware_avi.ClientServices, dcr *discoveredCertificateAndUrl) error {
+func processVirtualServices(client *domain.Client, clientServices vmware_avi.ClientServices, dcr *discoveredCertificateAndURL) error {
 	var err error
 	var virtualServices []*models.VirtualService
 

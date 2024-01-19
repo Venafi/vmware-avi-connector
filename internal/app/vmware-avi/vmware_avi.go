@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// DiscoveryService represents ...
 type DiscoveryService interface {
 	DiscoverCertificates(c echo.Context) error
 }

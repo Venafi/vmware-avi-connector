@@ -114,9 +114,9 @@ func setupDiscovery(
 
 	tdr = newTenantDiscoveryResults()
 	for tenant, certificates := range sslKeysAndCertificates {
-		discovered := make([]*discoveredCertificateAndUrl, 0)
+		discovered := make([]*discoveredCertificateAndURL, 0)
 		for _, certificate := range certificates {
-			dcu := &discoveredCertificateAndUrl{
+			dcu := &discoveredCertificateAndURL{
 				Name: getCertificateName(certificate),
 				Result: &DiscoveredCertificate{
 					Certificate:       *certificate.Certificate.Certificate,
@@ -132,7 +132,7 @@ func setupDiscovery(
 			require.True(t, ok)
 
 			var certificateUUID string
-			certificateUUID, err = getUuidFromUrl(*certificate.URL)
+			certificateUUID, err = getUUIDFromURL(*certificate.URL)
 			require.NoError(t, err)
 
 			var virtualServices []*models.VirtualService
@@ -185,7 +185,7 @@ func setupExpectGetAllSSLKeysAndCertificates(clientServices *mocks.MockClientSer
 				return certificates, nil
 			}
 
-			return nil, errors.New(fmt.Sprintf("%s: That page contains no results", client.Tenant))
+			return nil, fmt.Errorf("%s: That page contains no results", client.Tenant)
 		}).
 		Times(times)
 
@@ -226,7 +226,7 @@ func toPointer(value string) *string {
 func verify(t *testing.T, expecting []*DiscoveredCertificate, recorder *httptest.ResponseRecorder) *DiscoveryPage {
 	var err error
 
-	response := recorder.Result()
+	response := recorder.Result() //nolint:bodyclose
 	defer func() {
 		_ = response.Body.Close()
 	}()
