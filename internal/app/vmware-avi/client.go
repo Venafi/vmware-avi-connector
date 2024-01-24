@@ -1,4 +1,5 @@
-package vmware_avi
+// Package vmwareavi contains logic specific for working with VMware AVI devices
+package vmwareavi
 
 import (
 	"errors"
@@ -11,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:generate go run github.com/golang/mock/mockgen -source ./client.go -destination=./mocks/mock_client.go -package=mocks
+//go:generate go run go.uber.org/mock/mockgen -source ./client.go -destination=./mocks/mock_client.go -package=mocks
 
 // ClientServices represents ...
 type ClientServices interface {
@@ -100,7 +101,7 @@ func (c *VMwareAviClientsImpl) Connect(client *domain.Client) error {
 		session.SetInsecure)
 	if err != nil {
 		zap.L().Error("failed to connect to the VMware NSX-ALB host with tenant", zap.String("hostname", client.Connection.HostnameOrAddress), zap.Int("port", client.Connection.Port), zap.String("tenant", client.Tenant), zap.Error(err))
-		return fmt.Errorf("failed to connect with tenant \"%s\": %w", client.Tenant, err)
+		return fmt.Errorf(`failed to connect with tenant "%s": %w`, client.Tenant, err)
 	}
 
 	client.Session = tc

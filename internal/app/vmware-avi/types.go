@@ -1,4 +1,4 @@
-package vmware_avi
+package vmwareavi
 
 const (
 	// DefaultTenantName represents the default tenant

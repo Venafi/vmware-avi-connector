@@ -1,4 +1,4 @@
-package vmware_avi
+package vmwareavi
 
 import (
 	"bytes"
@@ -8,11 +8,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
 	"github.com/venafi/vmware-avi-connector/internal/app/domain"
 	"github.com/venafi/vmware-avi-connector/internal/app/vmware-avi/mocks"
+	"go.uber.org/mock/gomock"
 )
 
 func TestConnectionTest(t *testing.T) {

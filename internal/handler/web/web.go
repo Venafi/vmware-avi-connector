@@ -1,3 +1,4 @@
+// Package web contains the web server and registered routes
 package web
 
 import (
@@ -25,7 +26,7 @@ type WebhookService interface {
 	HandleTestConnection(c echo.Context) error
 }
 
-// ConfigureHTTPServers creates a HTTP server with standard middleware and a system HTTP server with health and metrics endpoints
+// ConfigureHTTPServers creates an HTTP server with standard middleware and a system HTTP server with health and metrics endpoints
 // returns the echo engine for serving API
 func ConfigureHTTPServers(lifecycle fx.Lifecycle, shutdowner fx.Shutdowner) (*echo.Echo, error) {
 	e := echo.New()
@@ -35,7 +36,7 @@ func ConfigureHTTPServers(lifecycle fx.Lifecycle, shutdowner fx.Shutdowner) (*ec
 			go func() {
 				if err := e.Start(":8080"); err != nil && err != http.ErrServerClosed {
 					zap.L().Error("failed to start echo server", zap.Error(err))
-					if err := shutdowner.Shutdown(); err != nil {
+					if err = shutdowner.Shutdown(); err != nil {
 						zap.L().Error("fx shutdown error", zap.Error(err))
 					}
 				}

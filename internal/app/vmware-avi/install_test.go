@@ -1,4 +1,4 @@
-package vmware_avi
+package vmwareavi
 
 import (
 	"bytes"
@@ -9,13 +9,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
 	"github.com/venafi/vmware-avi-connector/internal/app/domain"
 	"github.com/venafi/vmware-avi-connector/internal/app/vmware-avi/mocks"
 	"github.com/vmware/alb-sdk/go/models"
 	"github.com/vmware/alb-sdk/go/session"
+	"go.uber.org/mock/gomock"
 )
 
 const (

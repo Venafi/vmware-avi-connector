@@ -13,10 +13,7 @@ func newTenantDiscoveryResults() *tenantDiscoveryResults {
 }
 
 func (tdr *tenantDiscoveryResults) append(tenant string, dcc []*discoveredCertificateAndURL) {
-	var ok bool
-	var existing []*discoveredCertificateAndURL //nolint:prealloc
-
-	existing, ok = tdr.TenantMap[tenant]
+	existing, ok := tdr.TenantMap[tenant]
 	if !ok {
 		tdr.Discovered += len(dcc)
 		tdr.TenantMap[tenant] = dcc

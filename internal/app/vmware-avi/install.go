@@ -1,4 +1,4 @@
-package vmware_avi
+package vmwareavi
 
 import (
 	"crypto/x509"
@@ -96,18 +96,18 @@ func (svc *WebhookService) installCertificateChain(client *domain.Client, _ *dom
 			"export_key": "false",
 		}))
 		if err != nil && !strings.EqualFold(fmt.Sprintf("No object of type sslkeyandcertificate with name %s is found", name), err.Error()) {
-			return fmt.Errorf("retrieve chain certificate by name \"%s\" failed: %w", name, err)
+			return fmt.Errorf(`retrieve chain certificate by name "%s" failed: %w`, name, err)
 		}
 
 		if kac != nil {
 			if kac.Certificate.Certificate == nil {
-				return fmt.Errorf("retrieve chain certificate by name \"%s\" failed: empty result", name)
+				return fmt.Errorf(`retrieve chain certificate by name "%s" failed: empty result`, name)
 			}
 
 			var existing *x509.Certificate
 			existing, err = parseCertificatePEM([]byte(*kac.Certificate.Certificate))
 			if err != nil {
-				return fmt.Errorf("parse chain certificate with name \"%s\" failed: %w", name, err)
+				return fmt.Errorf(`parse chain certificate with name "%s" failed: %w`, name, err)
 			}
 
 			if !certificate.Equal(existing) {
@@ -130,7 +130,7 @@ func (svc *WebhookService) installCertificateChain(client *domain.Client, _ *dom
 
 		_, err = svc.ClientServices.CreateSSLKeyAndCertificate(client, create)
 		if err != nil {
-			return fmt.Errorf("failed to install chain certificate with name \"%s\": %w", name, err)
+			return fmt.Errorf(`failed to install chain certificate with name "%s": %w`, name, err)
 		}
 	}
 
@@ -198,7 +198,7 @@ func (svc *WebhookService) installCertificateAndPrivateKey(client *domain.Client
 
 	_, err = svc.ClientServices.CreateSSLKeyAndCertificate(client, create)
 	if err != nil {
-		return fmt.Errorf("failed to install certificate and private key with name \"%s\": %w", keystore.CertificateName, err)
+		return fmt.Errorf(`failed to install certificate and private key with name "%s": %w`, keystore.CertificateName, err)
 	}
 
 	return nil
@@ -211,18 +211,18 @@ func (svc *WebhookService) isSameCertificate(client *domain.Client, keystore *do
 		"export_key": "false",
 	}))
 	if err != nil && !strings.EqualFold(fmt.Sprintf("No object of type sslkeyandcertificate with name %s is found", keystore.CertificateName), err.Error()) {
-		return nil, false, fmt.Errorf("retrieve certificate by name \"%s\" failed: %w", keystore.CertificateName, err)
+		return nil, false, fmt.Errorf(`retrieve certificate by name "%s" failed: %w`, keystore.CertificateName, err)
 	}
 
 	if kac != nil {
 		if kac.Certificate.Certificate == nil {
-			return nil, false, fmt.Errorf("retrieve certificate by name \"%s\" failed: empty result", keystore.CertificateName)
+			return nil, false, fmt.Errorf(`retrieve certificate by name "%s" failed: empty result`, keystore.CertificateName)
 		}
 
 		var existing *x509.Certificate
 		existing, err = parseCertificatePEM([]byte(*kac.Certificate.Certificate))
 		if err != nil {
-			return nil, false, fmt.Errorf("parse certificate with name \"%s\" failed: %w", keystore.CertificateName, err)
+			return nil, false, fmt.Errorf(`parse certificate with name "%s" failed: %w`, keystore.CertificateName, err)
 		}
 
 		return existing, certificate.Equal(existing), nil

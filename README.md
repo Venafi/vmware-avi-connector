@@ -1,3 +1,6 @@
+[![Venafi](https://raw.githubusercontent.com/Venafi/.github/master/images/Venafi_logo.png)](https://www.venafi.com/)
+[![MPL 2.0 License](https://img.shields.io/badge/License-MPL%202.0-blue.svg)](https://opensource.org/licenses/MPL-2.0)
+
 # vmware-avi-connector
 Sample TLSPC machine connector 
 
@@ -32,9 +35,9 @@ export CONTAINER_REGISTRY=company.jfrog.io/connectors/vmware
 
 ## Configuring Usage of an installed Certificate, Private Key and Issuing Chain
 
-## Discovering Certificates, Issuing Chains and the usage
-
 # Discovery Connector Basics
+
+## Discovering Certificates, Issuing Chains and the usage
 
 # Code Structure
 

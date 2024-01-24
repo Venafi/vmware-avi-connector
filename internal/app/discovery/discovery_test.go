@@ -13,13 +13,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
 	"github.com/venafi/vmware-avi-connector/internal/app/domain"
 	"github.com/venafi/vmware-avi-connector/internal/app/vmware-avi/mocks"
 	"github.com/vmware/alb-sdk/go/models"
 	"github.com/vmware/alb-sdk/go/session"
+	"go.uber.org/mock/gomock"
 )
 
 const (
@@ -77,7 +77,7 @@ func setupDiscovery(
 	clientServices *mocks.MockClientServices,
 	maxResults int,
 	sslKeysAndCertificates map[string][]*models.SSLKeyAndCertificate,
-	tenantVirtualServices map[string]map[string][]*models.VirtualService) (tdr *tenantDiscoveryResults, recorder *httptest.ResponseRecorder, ctx echo.Context, err error) {
+	tenantVirtualServices map[string]map[string][]*models.VirtualService) (tdr *tenantDiscoveryResults, err error) {
 
 	var ok bool
 
@@ -156,7 +156,7 @@ func setupDiscovery(
 		tdr.append(tenant, discovered)
 	}
 
-	return tdr, recorder, ctx, nil
+	return tdr, nil
 }
 
 func setupExpectGetAllSSLKeysAndCertificates(clientServices *mocks.MockClientServices, responses map[string][]*models.SSLKeyAndCertificate, maxResults int) int {
@@ -280,8 +280,6 @@ func TestDiscovery(t *testing.T) {
 		require.NotNil(t, discoveryServices)
 
 		var tdr *tenantDiscoveryResults
-		var recorder *httptest.ResponseRecorder
-		var ctx echo.Context
 
 		request := &DiscoverCertificatesRequest{
 			Configuration: DiscoverCertificatesConfiguration{
@@ -300,7 +298,7 @@ func TestDiscovery(t *testing.T) {
 			Page: nil,
 		}
 
-		tdr, recorder, ctx, err = setupDiscovery(t,
+		tdr, err = setupDiscovery(t,
 			mockClientServices,
 			request.Control.MaxResults,
 			map[string][]*models.SSLKeyAndCertificate{
@@ -329,12 +327,16 @@ func TestDiscovery(t *testing.T) {
 				},
 			})
 		require.NotNil(t, tdr)
+		require.NoError(t, err)
 
 		var raw []byte
+		var recorder *httptest.ResponseRecorder
 
 		raw, err = json.Marshal(request)
 		require.NoError(t, err)
 		require.NotNil(t, raw)
+
+		var ctx echo.Context
 
 		recorder, ctx = setupPost(e, "/v1/discovercertificates", bytes.NewReader(raw))
 		require.NotNil(t, ctx)
@@ -377,7 +379,7 @@ func TestDiscovery(t *testing.T) {
 			Page: nil,
 		}
 
-		tdr, recorder, ctx, err = setupDiscovery(t,
+		tdr, err = setupDiscovery(t,
 			mockClientServices,
 			request.Control.MaxResults,
 			map[string][]*models.SSLKeyAndCertificate{
@@ -440,6 +442,7 @@ func TestDiscovery(t *testing.T) {
 				},
 			})
 		require.NotNil(t, tdr)
+		require.NoError(t, err)
 
 		var page *DiscoveryPage
 		for batch := 0; batch < 2; batch++ {
@@ -495,7 +498,7 @@ func TestDiscovery(t *testing.T) {
 			Page: nil,
 		}
 
-		tdr, recorder, ctx, err = setupDiscovery(t,
+		tdr, err = setupDiscovery(t,
 			mockClientServices,
 			request.Control.MaxResults,
 			map[string][]*models.SSLKeyAndCertificate{
@@ -598,6 +601,7 @@ func TestDiscovery(t *testing.T) {
 				},
 			})
 		require.NotNil(t, tdr)
+		require.NoError(t, err)
 
 		var raw []byte
 
@@ -646,7 +650,7 @@ func TestDiscovery(t *testing.T) {
 			Page: nil,
 		}
 
-		tdr, recorder, ctx, err = setupDiscovery(t,
+		tdr, err = setupDiscovery(t,
 			mockClientServices,
 			request.Control.MaxResults,
 			map[string][]*models.SSLKeyAndCertificate{
@@ -749,6 +753,7 @@ func TestDiscovery(t *testing.T) {
 				},
 			})
 		require.NotNil(t, tdr)
+		require.NoError(t, err)
 
 		var page *DiscoveryPage
 		for batch := 0; batch < 2; batch++ {

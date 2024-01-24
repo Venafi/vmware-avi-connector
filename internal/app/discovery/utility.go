@@ -50,7 +50,7 @@ func getCertificateName(certificate *models.SSLKeyAndCertificate) string {
 func getUUIDFromURL(rawURL string) (string, error) {
 	u, err := url.Parse(rawURL)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse entity URL \"%s\": %w", rawURL, err)
+		return "", fmt.Errorf(`failed to parse entity URL "%s": %w`, rawURL, err)
 	}
 
 	path := strings.TrimSpace(u.Path)
@@ -104,7 +104,7 @@ func isExpired(certificate *models.SSLCertificate) (expired bool, err error) {
 
 	t, err := time.Parse("2006-01-02 15:04:05", notAfter)
 	if err != nil {
-		return false, fmt.Errorf("unable to parse certificate expiration value of \"%s\": %w", notAfter, err)
+		return false, fmt.Errorf(`unable to parse certificate expiration value of "%s": %w`, notAfter, err)
 	}
 
 	return time.Now().After(t), nil

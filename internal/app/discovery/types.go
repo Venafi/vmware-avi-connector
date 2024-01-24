@@ -18,7 +18,6 @@ type DiscoverCertificatesConfiguration struct {
 	ExcludeExpiredCertificates  bool   `json:"excludeExpiredCertificates"`
 	ExcludeInactiveCertificates bool   `json:"excludeInactiveCertificates"`
 	Tenants                     string `json:"tenants"`
-	//	TimeStamp                   string `json:"timeStamp"`
 
 	tenants TenantNames
 }

@@ -1,4 +1,4 @@
-package vmware_avi
+package vmwareavi
 
 import (
 	"crypto/x509"
@@ -58,7 +58,7 @@ func parseCertificatePEM(content []byte) (*x509.Certificate, error) {
 	copy(remaining, content)
 
 	for {
-		block, remaining = pem.Decode(remaining)
+		block, _ = pem.Decode(remaining)
 		if block == nil {
 			break
 		}

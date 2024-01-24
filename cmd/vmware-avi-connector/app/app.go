@@ -1,8 +1,9 @@
+// Package app represents the application logic.
 package app
 
 import (
 	"github.com/venafi/vmware-avi-connector/internal/app/discovery"
-	vmware_avi "github.com/venafi/vmware-avi-connector/internal/app/vmware-avi"
+	vmwareavi "github.com/venafi/vmware-avi-connector/internal/app/vmware-avi"
 	"github.com/venafi/vmware-avi-connector/internal/handler/web"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
@@ -17,9 +18,9 @@ func New() *fx.App {
 		fx.Provide(
 			configureLogger,
 			web.ConfigureHTTPServers,
-			fx.Annotate(vmware_avi.NewVMwareAviClients, fx.As(new(vmware_avi.ClientServices))),
-			fx.Annotate(discovery.NewDiscoveryService, fx.As(new(vmware_avi.DiscoveryService))),
-			fx.Annotate(vmware_avi.NewWebhookService, fx.As(new(web.WebhookService))),
+			fx.Annotate(vmwareavi.NewVMwareAviClients, fx.As(new(vmwareavi.ClientServices))),
+			fx.Annotate(discovery.NewDiscoveryService, fx.As(new(vmwareavi.DiscoveryService))),
+			fx.Annotate(vmwareavi.NewWebhookService, fx.As(new(web.WebhookService))),
 		),
 		fx.Invoke(
 			web.RegisterHandlers,
@@ -35,7 +36,7 @@ func New() *fx.App {
 func configureLogger() (*zap.Logger, error) {
 	loggerConfig := zap.NewProductionConfig()
 	loggerConfig.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
-	loggerConfig.EncoderConfig = zap.NewDevelopmentEncoderConfig()
+	loggerConfig.EncoderConfig = zap.NewProductionEncoderConfig()
 	loggerConfig.EncoderConfig.TimeKey = "time"
 	loggerConfig.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	loggerConfig.EncoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder

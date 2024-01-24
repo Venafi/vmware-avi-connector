@@ -1,3 +1,4 @@
+// Package discovery implements
 package discovery
 
 import (
@@ -6,9 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	vmware_avi "github.com/venafi/vmware-avi-connector/internal/app/vmware-avi"
-
 	"github.com/venafi/vmware-avi-connector/internal/app/domain"
+	vmwareavi "github.com/venafi/vmware-avi-connector/internal/app/vmware-avi"
 	"github.com/vmware/alb-sdk/go/models"
 	"github.com/vmware/alb-sdk/go/session"
 	"go.uber.org/zap"
@@ -32,10 +32,10 @@ type certificateDiscoveryProcessor struct {
 	configuration  *DiscoverCertificatesConfiguration
 	control        *DiscoveryControl
 	paginator      *certificateDiscoveryPaginator
-	clientServices vmware_avi.ClientServices
+	clientServices vmwareavi.ClientServices
 }
 
-func newCertificateDiscovery(services vmware_avi.ClientServices, connection *domain.Connection, configuration *DiscoverCertificatesConfiguration, control *DiscoveryControl) *certificateDiscoveryProcessor {
+func newCertificateDiscovery(services vmwareavi.ClientServices, connection *domain.Connection, configuration *DiscoverCertificatesConfiguration, control *DiscoveryControl) *certificateDiscoveryProcessor {
 	return &certificateDiscoveryProcessor{
 		caCertificates: map[string]string{},
 		connection:     connection,
@@ -56,8 +56,8 @@ func (p *certificateDiscoveryProcessor) addCaCertificates(client *domain.Client,
 
 	var err error
 
-	chain := make([]string, 0)
-	for _, caCert := range caCerts {
+	chain := make([]string, len(caCerts))
+	for idx, caCert := range caCerts {
 		if caCert == nil {
 			zap.L().Info("null CA Certificate in collection", zap.String("hostname", p.connection.HostnameOrAddress), zap.Int("port", p.connection.Port), zap.String("tenant", client.Tenant), zap.String("name", certificateName))
 			return
@@ -93,7 +93,7 @@ func (p *certificateDiscoveryProcessor) addCaCertificates(client *domain.Client,
 		var pem string
 		pem, exists = p.caCertificates[*caCert.CaRef]
 		if exists {
-			chain = append(chain, pem)
+			chain[idx] = pem
 			continue
 		}
 
@@ -114,7 +114,7 @@ func (p *certificateDiscoveryProcessor) addCaCertificates(client *domain.Client,
 			return
 		}
 
-		chain = append(chain, *cac.Certificate.Certificate)
+		chain[idx] = *cac.Certificate.Certificate
 		p.caCertificates[*caCert.CaRef] = *cac.Certificate.Certificate
 	}
 
@@ -122,26 +122,20 @@ func (p *certificateDiscoveryProcessor) addCaCertificates(client *domain.Client,
 }
 
 func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *DiscoveryPage) (finished bool, results []*discoveredCertificateAndURL, err error) {
-	defer func() {
-		if !finished {
-			data, _ := json.Marshal(p.paginator)
-			page.Paginator = string(data)
-		} else {
-			page.Paginator = ""
-		}
-	}()
-
 	finished = true
 
 	if !strings.EqualFold(client.Tenant, *page.Tenant) {
-		return finished, nil, nil
+		page.Paginator = ""
+		return true, nil, nil
 	}
 
 	if len(page.Paginator) > 0 {
 		err = json.Unmarshal([]byte(page.Paginator), p.paginator)
 		if err != nil {
+			page.Paginator = ""
+
 			zap.L().Error("failed to unmarshal the certificate discovery page paginator", zap.String("address", p.connection.HostnameOrAddress), zap.Int("port", p.connection.Port), zap.String("tenant", client.Tenant), zap.Error(err))
-			return finished, nil, fmt.Errorf("failed to unmarshal certificate discovery page paginator: %w", err)
+			return true, nil, fmt.Errorf("failed to unmarshal certificate discovery page paginator: %w", err)
 		}
 	}
 
@@ -162,11 +156,11 @@ func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *Di
 
 			ae, ok = err.(session.AviError)
 			if !ok || ae.AviResult.Message == nil || !strings.Contains(*ae.AviResult.Message, "That page contains no results") {
-				zap.L().Error("Error reading VMware NSX-ALB certificates", zap.String("address", p.connection.HostnameOrAddress), zap.Int("port", p.connection.Port), zap.String("tenant", client.Tenant), zap.Error(err))
-				return true, nil, fmt.Errorf("failed to read VMware NSX-ALB certificates for the tenant \"%s\": %w", client.Tenant, err)
-			}
+				page.Paginator = ""
 
-			finished = true
+				zap.L().Error("Error reading VMware NSX-ALB certificates", zap.String("address", p.connection.HostnameOrAddress), zap.Int("port", p.connection.Port), zap.String("tenant", client.Tenant), zap.Error(err))
+				return true, nil, fmt.Errorf(`failed to read VMware NSX-ALB certificates for the tenant "%s": %w`, client.Tenant, err)
+			}
 
 			p.paginator.Page = 1
 			p.paginator.Index = 0
@@ -244,7 +238,8 @@ func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *Di
 
 			err = processVirtualServices(client, p.clientServices, dcr)
 			if err != nil {
-				return false, nil, err
+				_ = p.updateDiscoveryPaginator(client, true, page)
+				return true, nil, err
 			}
 
 			if !p.configuration.ExcludeInactiveCertificates || len(dcr.Result.MachineIdentities) > 0 {
@@ -252,7 +247,9 @@ func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *Di
 
 				if len(discoveredCertificates) >= p.control.MaxResults {
 					finished = false
-					return finished, discoveredCertificates, nil
+
+					err = p.updateDiscoveryPaginator(client, finished, page)
+					return finished, discoveredCertificates, err
 				}
 			}
 		}
@@ -265,10 +262,27 @@ func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *Di
 		}
 
 		p.paginator.Page = 1
-
-		finished = true
 		break
 	}
 
-	return finished, discoveredCertificates, nil
+	finished = true
+
+	err = p.updateDiscoveryPaginator(client, finished, page)
+	return finished, discoveredCertificates, err
+}
+
+func (p *certificateDiscoveryProcessor) updateDiscoveryPaginator(client *domain.Client, finished bool, page *DiscoveryPage) error {
+	if !finished {
+		data, err := json.Marshal(p.paginator)
+		if err != nil {
+			zap.L().Error("Error marshalling VMware NSX-ALB discovery page", zap.String("address", p.connection.HostnameOrAddress), zap.Int("port", p.connection.Port), zap.String("tenant", client.Tenant), zap.Error(err))
+			return fmt.Errorf(`failed to marshal VMware NSX-ALB discovery page for the tenant "%s": %w`, client.Tenant, err)
+		}
+
+		page.Paginator = string(data)
+		return nil
+	}
+
+	page.Paginator = ""
+	return nil
 }

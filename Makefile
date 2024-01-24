@@ -32,11 +32,13 @@ help:
 	@echo "make help                  displays this help"
 	@echo "\nTests"
 	@echo "make test                  run tests"
+	@echo "make lint                  run linter"
 	@echo "\nImages"
 	@echo "make image                 generate a container image"
 	@echo "make push                  generate and push a container image to the registry"
 	@echo "\nOther"
 	@echo "make generate              generate schema"
+	@echo "make manifests             generate a create and an update manifest from the existing manifest.json"
 	@echo ""
 
 ### Init rules
@@ -84,7 +86,7 @@ image:
 	$(error CONTAINER_REGISTRY is not set)
 push:
 	$(error CONTAINER_REGISTRY is not set)
-manifest:
+manifests:
 	$(error CONTAINER_REGISTRY is not set)
 else
 .PHONY: image
@@ -99,7 +101,7 @@ push: buildx
 
 .PHONY: manifests
 manifests:
-	@echo "Updating manifest deployment image"
+	@echo "Generate manifests"
 	@echo "     ImagePath: ${CONTAINER_REGISTRY}/${IMAGE_NAME}:${TAG}"
 	@echo "     ImageName: ${IMAGE_NAME}"
 	$(eval CONNECTOR_BUILD_DIGEST=$(shell cat buildx-digest.json | jq -r '."containerimage.digest"'))

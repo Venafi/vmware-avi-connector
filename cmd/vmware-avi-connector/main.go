@@ -1,3 +1,4 @@
+// Package main implements the application main function.
 package main
 
 import (

@@ -1,4 +1,4 @@
-package vmware_avi
+package vmwareavi
 
 import (
 	"fmt"
@@ -55,7 +55,7 @@ func (svc *WebhookService) HandleConfigureInstallationEndpoint(c echo.Context) e
 		return c.String(http.StatusBadRequest, fmt.Sprintf("failed to configure VMware NSX-ALB: %s", err.Error()))
 	}
 
-	return nil
+	return c.NoContent(http.StatusOK)
 }
 
 // HandleGetTargetConfiguration ...
@@ -80,11 +80,11 @@ func (svc *WebhookService) configureInstallationEndpoint(client *domain.Client, 
 	var vs *models.VirtualService
 	vs, err = svc.ClientServices.GetVirtualServiceByName(client, binding.VirtualServiceName)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve virtual service \"%s\": %w", binding.VirtualServiceName, err)
+		return fmt.Errorf(`failed to retrieve virtual service "%s": %w`, binding.VirtualServiceName, err)
 	}
 
 	if vs == nil {
-		return fmt.Errorf("failed to retrieve virtual service \"%s\": empty response", binding.VirtualServiceName)
+		return fmt.Errorf(`failed to retrieve virtual service "%s": empty response`, binding.VirtualServiceName)
 	}
 
 	// Get the certificate UUID
@@ -93,15 +93,15 @@ func (svc *WebhookService) configureInstallationEndpoint(client *domain.Client, 
 		"export_key": "false",
 	}))
 	if err != nil {
-		return fmt.Errorf("failed to retrieve certificate \"%s\": %w", keystore.CertificateName, err)
+		return fmt.Errorf(`failed to retrieve certificate "%s": %w`, keystore.CertificateName, err)
 	}
 
 	if kac == nil {
-		return fmt.Errorf("failed to retrieve certificate \"%s\": empty response", keystore.CertificateName)
+		return fmt.Errorf(`failed to retrieve certificate "%s": empty response`, keystore.CertificateName)
 	}
 
 	if kac.URL == nil || len(*kac.URL) == 0 {
-		return fmt.Errorf("invalid certificate \"%s\": no assigned UUID", keystore.CertificateName)
+		return fmt.Errorf(`invalid certificate "%s": no assigned UUID`, keystore.CertificateName)
 	}
 
 	// Associate the certificate with the virtual service
@@ -109,7 +109,7 @@ func (svc *WebhookService) configureInstallationEndpoint(client *domain.Client, 
 
 	_, err = svc.ClientServices.UpdateVirtualService(client, vs)
 	if err != nil {
-		return fmt.Errorf("failed to update the virtual service \"%s\": %w", binding.VirtualServiceName, err)
+		return fmt.Errorf(`failed to update the virtual service "%s": %w`, binding.VirtualServiceName, err)
 	}
 
 	return nil

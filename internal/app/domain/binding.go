@@ -1,3 +1,4 @@
+// Package domain contains shared definitions.
 package domain
 
 // Binding ...

@@ -8,18 +8,18 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/venafi/vmware-avi-connector/internal/app/domain"
-	vmware_avi "github.com/venafi/vmware-avi-connector/internal/app/vmware-avi"
+	vmwareavi "github.com/venafi/vmware-avi-connector/internal/app/vmware-avi"
 	"github.com/vmware/alb-sdk/go/models"
 	"go.uber.org/zap"
 )
 
 // DiscoveryService represents ...
 type DiscoveryService struct {
-	ClientServices vmware_avi.ClientServices
+	ClientServices vmwareavi.ClientServices
 }
 
 // NewDiscoveryService will ...
-func NewDiscoveryService(clientServices vmware_avi.ClientServices) *DiscoveryService {
+func NewDiscoveryService(clientServices vmwareavi.ClientServices) *DiscoveryService {
 	return &DiscoveryService{
 		ClientServices: clientServices,
 	}
@@ -130,7 +130,7 @@ func buildResponse(discoveryPage *DiscoveryPage, discoveredResults *tenantDiscov
 }
 
 func (svc *DiscoveryService) getAllTenants(connection *domain.Connection) (tenants TenantNames, err error) {
-	client := svc.ClientServices.NewClient(connection, vmware_avi.DefaultTenantName)
+	client := svc.ClientServices.NewClient(connection, vmwareavi.DefaultTenantName)
 	err = svc.ClientServices.Connect(client)
 	defer func() {
 		svc.ClientServices.Close(client)
