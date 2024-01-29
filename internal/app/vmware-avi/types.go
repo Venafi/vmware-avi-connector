@@ -5,6 +5,6 @@ const (
 	DefaultTenantName = "admin"
 )
 
-// TargetConfiguration represents ...
+// TargetConfiguration contains the details of a VMware AVI host configuration
 type TargetConfiguration struct {
 }

@@ -16,25 +16,25 @@ import (
 )
 
 const (
-	// SslCertificateTypeCA is ...
+	// SslCertificateTypeCA is the value for a certificate type that is for a certificate authority
 	SslCertificateTypeCA = "SSL_CERTIFICATE_TYPE_CA"
-	// SslCertificateTypeVirtualService is ...
+	// SslCertificateTypeVirtualService is the value for a certificate type for a virtual service
 	SslCertificateTypeVirtualService = "SSL_CERTIFICATE_TYPE_VIRTUALSERVICE"
 )
 
-// InstallCertificateBundleRequest represents ...
+// InstallCertificateBundleRequest contains the request details for installing a certificate, issuing chain and private key
 type InstallCertificateBundleRequest struct {
 	Connection           *domain.Connection       `json:"connection"`
 	CertificateBundle    domain.CertificateBundle `json:"certificateBundle"`
 	InstallationKeystore domain.Keystore          `json:"keystore"`
 }
 
-// InstallCertificateBundleResponse represents ...
+// InstallCertificateBundleResponse contains the response for an InstallCertificateBundleRequest
 type InstallCertificateBundleResponse struct {
 	InstallationKeystore domain.Keystore `json:"keystore"`
 }
 
-// HandleInstallCertificateBundle ...
+// HandleInstallCertificateBundle will attempt to install a certificate, issuing chain and private key
 func (svc *WebhookService) HandleInstallCertificateBundle(c echo.Context) error {
 	req := InstallCertificateBundleRequest{}
 	if err := c.Bind(&req); err != nil {

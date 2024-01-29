@@ -10,17 +10,17 @@ import (
 	"go.uber.org/zap"
 )
 
-// TestConnectionRequest represents ...
+// TestConnectionRequest contains the request details for testing connectivity with a VMware AVI host
 type TestConnectionRequest struct {
 	Connection *domain.Connection `json:"connection"`
 }
 
-// TestConnectionResponse represents ...
+// TestConnectionResponse contains the response for a TestConnectionRequest
 type TestConnectionResponse struct {
 	Result bool `json:"result"`
 }
 
-// HandleTestConnection ...
+// HandleTestConnection will attempt to connect to a VMware AVI host
 func (svc *WebhookService) HandleTestConnection(c echo.Context) error {
 	var err error
 

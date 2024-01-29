@@ -14,7 +14,7 @@ import (
 
 //go:generate go run go.uber.org/mock/mockgen -source ./client.go -destination=./mocks/mock_client.go -package=mocks
 
-// ClientServices represents ...
+// ClientServices interfaces for interacting with VMware AVI
 type ClientServices interface {
 	// Close will ...
 	Close(client *domain.Client)
@@ -40,7 +40,7 @@ type ClientServices interface {
 	UpdateVirtualService(client *domain.Client, obj *models.VirtualService, options ...session.ApiOptionsParams) (*models.VirtualService, error)
 }
 
-// VMwareAviClientsImpl represents ...
+// VMwareAviClientsImpl implementation of ClientServices
 type VMwareAviClientsImpl struct {
 }
 
@@ -49,7 +49,7 @@ func NewVMwareAviClients() *VMwareAviClientsImpl {
 	return &VMwareAviClientsImpl{}
 }
 
-// Close will ...
+// Close will logout the client session
 func (c *VMwareAviClientsImpl) Close(client *domain.Client) {
 	if client == nil || client.Session == nil {
 		return
@@ -64,7 +64,7 @@ func (c *VMwareAviClientsImpl) Close(client *domain.Client) {
 	client.Session = nil
 }
 
-// Connect will ...
+// Connect will attempt to create a new client session and connect to the VMware AVI host
 func (c *VMwareAviClientsImpl) Connect(client *domain.Client) error {
 	var err error
 

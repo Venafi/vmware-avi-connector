@@ -1,4 +1,4 @@
-// Package discovery implements
+// Package discovery implements logic for paged certificate discovery on a VMware AVI host
 package discovery
 
 import (
@@ -122,8 +122,6 @@ func (p *certificateDiscoveryProcessor) addCaCertificates(client *domain.Client,
 }
 
 func (p *certificateDiscoveryProcessor) discover(client *domain.Client, page *DiscoveryPage) (finished bool, results []*discoveredCertificateAndURL, err error) {
-	finished = true
-
 	if !strings.EqualFold(client.Tenant, *page.Tenant) {
 		page.Paginator = ""
 		return true, nil, nil

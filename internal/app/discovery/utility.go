@@ -11,7 +11,7 @@ import (
 	"github.com/vmware/alb-sdk/go/models"
 )
 
-// TenantNames represents ...
+// TenantNames is an alias declaration for a collection of tenant names
 type TenantNames []string
 
 func (tenants TenantNames) contains(tenant string) bool {

@@ -17,7 +17,7 @@ import (
 	"gopkg.in/square/go-jose.v2"
 )
 
-// WebhookService ...
+// WebhookService interfaces for the connector operation functions
 type WebhookService interface {
 	HandleConfigureInstallationEndpoint(c echo.Context) error
 	HandleDiscoverCertificates(c echo.Context) error
@@ -51,7 +51,7 @@ func ConfigureHTTPServers(lifecycle fx.Lifecycle, shutdowner fx.Shutdowner) (*ec
 	return e, nil
 }
 
-// RegisterHandlers will ...
+// RegisterHandlers adds the method handlers for the supported routes
 func RegisterHandlers(e *echo.Echo, whService WebhookService) error {
 	e.GET("/healthz", func(c echo.Context) error {
 		return c.String(http.StatusOK, "OK")

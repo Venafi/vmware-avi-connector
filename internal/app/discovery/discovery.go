@@ -13,19 +13,19 @@ import (
 	"go.uber.org/zap"
 )
 
-// DiscoveryService represents ...
+// DiscoveryService implementation of ClientServices
 type DiscoveryService struct {
 	ClientServices vmwareavi.ClientServices
 }
 
-// NewDiscoveryService will ...
+// NewDiscoveryService create a new DiscoveryService
 func NewDiscoveryService(clientServices vmwareavi.ClientServices) *DiscoveryService {
 	return &DiscoveryService{
 		ClientServices: clientServices,
 	}
 }
 
-// DiscoverCertificates will ...
+// DiscoverCertificates will attempt to start or continue a discovery of certificates
 func (svc *DiscoveryService) DiscoverCertificates(c echo.Context) error {
 	var err error
 

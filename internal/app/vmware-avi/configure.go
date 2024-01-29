@@ -12,24 +12,24 @@ import (
 	"go.uber.org/zap"
 )
 
-// ConfigureInstallationEndpointRequest represents ...
+// ConfigureInstallationEndpointRequest contains the request details for configuring usage of a keystore
 type ConfigureInstallationEndpointRequest struct {
 	Connection *domain.Connection `json:"connection"`
 	Keystore   domain.Keystore    `json:"keystore"`
 	Binding    domain.Binding     `json:"binding"`
 }
 
-// GetTargetConfigurationRequest represents ...
+// GetTargetConfigurationRequest contains the request details for retrieving VMware AVI host configuration information
 type GetTargetConfigurationRequest struct {
 	Connection *domain.Connection `json:"connection"`
 }
 
-// GetTargetConfigurationResponse represents ...
+// GetTargetConfigurationResponse contains the response for a GetTargetConfigurationRequest
 type GetTargetConfigurationResponse struct {
 	TargetConfiguration TargetConfiguration `json:"targetConfiguration"`
 }
 
-// HandleConfigureInstallationEndpoint ...
+// HandleConfigureInstallationEndpoint will attempt to configure usage of a keystore
 func (svc *WebhookService) HandleConfigureInstallationEndpoint(c echo.Context) error {
 	req := ConfigureInstallationEndpointRequest{}
 	if err := c.Bind(&req); err != nil {
@@ -58,7 +58,7 @@ func (svc *WebhookService) HandleConfigureInstallationEndpoint(c echo.Context) e
 	return c.NoContent(http.StatusOK)
 }
 
-// HandleGetTargetConfiguration ...
+// HandleGetTargetConfiguration will attempt to retrieve the configuration information of the VMware AVI host
 func (svc *WebhookService) HandleGetTargetConfiguration(c echo.Context) error {
 	req := GetTargetConfigurationRequest{}
 	if err := c.Bind(&req); err != nil {
