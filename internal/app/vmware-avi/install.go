@@ -35,7 +35,7 @@ type InstallCertificateBundleResponse struct {
 }
 
 // HandleInstallCertificateBundle will attempt to install a certificate, issuing chain and private key
-func (svc *WebhookService) HandleInstallCertificateBundle(c echo.Context) error {
+func (svc *WebhookServiceImpl) HandleInstallCertificateBundle(c echo.Context) error {
 	req := InstallCertificateBundleRequest{}
 	if err := c.Bind(&req); err != nil {
 		zap.L().Error("invalid request, failed to unmarshall json", zap.Error(err))
@@ -75,7 +75,7 @@ func (svc *WebhookService) HandleInstallCertificateBundle(c echo.Context) error 
 	return c.JSON(http.StatusOK, &res)
 }
 
-func (svc *WebhookService) installCertificateChain(client *domain.Client, _ *domain.Keystore, chain [][]byte) error {
+func (svc *WebhookServiceImpl) installCertificateChain(client *domain.Client, _ *domain.Keystore, chain [][]byte) error {
 	var err error
 
 	for _, der := range chain {
@@ -137,7 +137,7 @@ func (svc *WebhookService) installCertificateChain(client *domain.Client, _ *dom
 	return nil
 }
 
-func (svc *WebhookService) installCertificateAndPrivateKey(client *domain.Client, keystore *domain.Keystore, certificate, privateKey []byte) error {
+func (svc *WebhookServiceImpl) installCertificateAndPrivateKey(client *domain.Client, keystore *domain.Keystore, certificate, privateKey []byte) error {
 	var err error
 	var identical bool
 	var leaf *x509.Certificate
@@ -204,7 +204,7 @@ func (svc *WebhookService) installCertificateAndPrivateKey(client *domain.Client
 	return nil
 }
 
-func (svc *WebhookService) isSameCertificate(client *domain.Client, keystore *domain.Keystore, certificate *x509.Certificate) (*x509.Certificate, bool, error) {
+func (svc *WebhookServiceImpl) isSameCertificate(client *domain.Client, keystore *domain.Keystore, certificate *x509.Certificate) (*x509.Certificate, bool, error) {
 	var err error
 	var kac *models.SSLKeyAndCertificate
 	kac, err = svc.ClientServices.GetSSLKeyAndCertificateByName(client, keystore.CertificateName, session.SetParams(map[string]string{

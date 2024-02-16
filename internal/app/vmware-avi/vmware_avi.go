@@ -9,15 +9,15 @@ type DiscoveryService interface {
 	DiscoverCertificates(c echo.Context) error
 }
 
-// WebhookService implementation of DiscoveryService
-type WebhookService struct {
+// WebhookServiceImpl implementation of DiscoveryService
+type WebhookServiceImpl struct {
 	ClientServices ClientServices
 	Discovery      DiscoveryService
 }
 
-// NewWebhookService will return a new WebhookService
-func NewWebhookService(clientServices ClientServices, discovery DiscoveryService) *WebhookService {
-	return &WebhookService{
+// NewWebhookService will return a new WebhookServiceImpl
+func NewWebhookService(clientServices ClientServices, discovery DiscoveryService) *WebhookServiceImpl {
+	return &WebhookServiceImpl{
 		ClientServices: clientServices,
 		Discovery:      discovery,
 	}

@@ -30,7 +30,7 @@ type GetTargetConfigurationResponse struct {
 }
 
 // HandleConfigureInstallationEndpoint will attempt to configure usage of a keystore
-func (svc *WebhookService) HandleConfigureInstallationEndpoint(c echo.Context) error {
+func (svc *WebhookServiceImpl) HandleConfigureInstallationEndpoint(c echo.Context) error {
 	req := ConfigureInstallationEndpointRequest{}
 	if err := c.Bind(&req); err != nil {
 		zap.L().Error("invalid request, failed to unmarshall json", zap.Error(err))
@@ -59,7 +59,7 @@ func (svc *WebhookService) HandleConfigureInstallationEndpoint(c echo.Context) e
 }
 
 // HandleGetTargetConfiguration will attempt to retrieve the configuration information of the VMware AVI host
-func (svc *WebhookService) HandleGetTargetConfiguration(c echo.Context) error {
+func (svc *WebhookServiceImpl) HandleGetTargetConfiguration(c echo.Context) error {
 	req := GetTargetConfigurationRequest{}
 	if err := c.Bind(&req); err != nil {
 		zap.L().Error("invalid request, failed to unmarshall json", zap.Error(err))
@@ -73,7 +73,7 @@ func (svc *WebhookService) HandleGetTargetConfiguration(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (svc *WebhookService) configureInstallationEndpoint(client *domain.Client, binding *domain.Binding, keystore *domain.Keystore) error {
+func (svc *WebhookServiceImpl) configureInstallationEndpoint(client *domain.Client, binding *domain.Binding, keystore *domain.Keystore) error {
 	var err error
 
 	// Get the virtual service UUID

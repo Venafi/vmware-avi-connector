@@ -154,6 +154,7 @@
                     }
                 },
                 "port": {
+                    "default": 443,
                     "description": "port.description",
                     "maximum": 65535,
                     "minimum": 1,

@@ -100,6 +100,8 @@ push: BUILDX_TARGET:=--target image
 push: buildx
 
 .PHONY: manifests
+manifests: build
+manifests: image
 manifests:
 	@echo "Generate manifests"
 	@echo "     ImagePath: ${CONTAINER_REGISTRY}/${IMAGE_NAME}:${TAG}"

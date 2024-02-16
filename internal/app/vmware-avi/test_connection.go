@@ -21,7 +21,7 @@ type TestConnectionResponse struct {
 }
 
 // HandleTestConnection will attempt to connect to a VMware AVI host
-func (svc *WebhookService) HandleTestConnection(c echo.Context) error {
+func (svc *WebhookServiceImpl) HandleTestConnection(c echo.Context) error {
 	var err error
 
 	req := TestConnectionRequest{}
@@ -39,6 +39,7 @@ func (svc *WebhookService) HandleTestConnection(c echo.Context) error {
 	defer func() {
 		svc.ClientServices.Close(client)
 	}()
+
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
