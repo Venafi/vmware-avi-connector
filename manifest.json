@@ -1,0 +1,343 @@
+{
+    "name": "VMware NSX Advanced Load Balancer (AVI)",
+    "description": "",
+    "workTypes": [
+        "PROVISIONING",
+        "DISCOVERY"
+    ],
+    "pluginType": "MACHINE",
+    "domainSchema": {
+        "binding": {
+            "properties": {
+                "virtualServiceName": {
+                    "type": "string",
+                    "x-labelLocalizationKey": "virtualServiceName.label",
+                    "x-rank": 0
+                }
+            },
+            "required": [
+                "virtualServiceName"
+            ],
+            "type": "object",
+            "x-labelLocalizationKey": "binding.label",
+            "x-primaryKey": [
+                "#/virtualServiceName"
+            ]
+        },
+        "certificateBundle": {
+            "properties": {
+                "certificate": {
+                    "contentEncoding": "base64",
+                    "type": "string"
+                },
+                "certificateChain": {
+                    "contentEncoding": "base64",
+                    "type": "string"
+                },
+                "privateKey": {
+                    "contentEncoding": "base64",
+                    "type": "string",
+                    "x-encrypted-base64": true
+                }
+            },
+            "required": [
+                "certificate",
+                "privateKey",
+                "certificateChain"
+            ],
+            "type": "object"
+        },
+        "connection": {
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "credentialType": {
+                                "const": "local"
+                            }
+                        },
+                        "required": [
+                            "credentialType"
+                        ]
+                    },
+                    "then": {
+                        "required": [
+                            "credentialType",
+                            "username",
+                            "password"
+                        ]
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "credentialType": {
+                                "const": "shared"
+                            }
+                        },
+                        "required": [
+                            "credentialType"
+                        ]
+                    },
+                    "then": {
+                        "required": [
+                            "credentialType",
+                            "credentialId"
+                        ]
+                    }
+                }
+            ],
+            "properties": {
+                "credentialId": {
+                    "description": "credentialId.description",
+                    "type": "string",
+                    "x-credential": {
+                        "authType": "username_password",
+                        "value": "#/properties/credentialId",
+                        "mapping": {
+                            "username": "#/username",
+                            "password": "#/password"
+                        }
+                    },
+                    "x-labelLocalizationKey": "credentialId.label",
+                    "x-rank": 3,
+                    "x-rule": {
+                        "effect": "SHOW",
+                        "condition": {
+                            "scope": "#/properties/credentialType",
+                            "schema": {
+                                "const": "shared"
+                            }
+                        }
+                    }
+                },
+                "credentialType": {
+                    "default": "local",
+                    "description": "credentialType.description",
+                    "oneOf": [
+                        {
+                            "const": "local",
+                            "title": "credentialType.local"
+                        },
+                        {
+                            "const": "shared",
+                            "title": "credentialType.shared"
+                        }
+                    ],
+                    "x-featureKey": "credential_manager_cyberark",
+                    "x-labelLocalizationKey": "credentialType.label",
+                    "x-rank": 2
+                },
+                "hostnameOrAddress": {
+                    "type": "string",
+                    "x-labelLocalizationKey": "address.label",
+                    "x-rank": 0
+                },
+                "password": {
+                    "type": "string",
+                    "x-controlOptions": {
+                        "password": true,
+                        "showPasswordLabel": "password.showPassword",
+                        "hidePasswordLabel": "password.hidePassword"
+                    },
+                    "x-encrypted": true,
+                    "x-labelLocalizationKey": "password.label",
+                    "x-rank": 4,
+                    "x-rule": {
+                        "effect": "SHOW",
+                        "condition": {
+                            "scope": "#/properties/credentialType",
+                            "schema": {
+                                "const": "local"
+                            }
+                        }
+                    }
+                },
+                "port": {
+                    "default": 443,
+                    "description": "port.description",
+                    "maximum": 65535,
+                    "minimum": 1,
+                    "type": "integer",
+                    "x-labelLocalizationKey": "port.label",
+                    "x-rank": 1
+                },
+                "username": {
+                    "type": "string",
+                    "x-encrypted": true,
+                    "x-labelLocalizationKey": "username.label",
+                    "x-rank": 3,
+                    "x-rule": {
+                        "effect": "SHOW",
+                        "condition": {
+                            "scope": "#/properties/credentialType",
+                            "schema": {
+                                "const": "local"
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "hostnameOrAddress",
+                "credentialType"
+            ],
+            "type": "object"
+        },
+        "discovery": {
+            "properties": {
+                "excludeExpiredCertificates": {
+                    "type": "boolean",
+                    "x-labelLocalizationKey": "discovery.expiredCertificatesLabel",
+                    "x-rank": 1
+                },
+                "excludeInactiveCertificates": {
+                    "type": "boolean",
+                    "x-labelLocalizationKey": "discovery.excludeInactiveCertificates",
+                    "x-rank": 2
+                },
+                "tenants": {
+                    "default": "Common",
+                    "description": "discovery.tenantsDescription",
+                    "maxLength": 64,
+                    "type": "string",
+                    "x-labelLocalizationKey": "discovery.tenantsLabel",
+                    "x-rank": 0
+                }
+            },
+            "type": "object"
+        },
+        "discoveryControl": {
+            "properties": {
+                "maxResults": {
+                    "type": "int"
+                }
+            },
+            "required": [
+                "maxResults"
+            ],
+            "type": "object"
+        },
+        "discoveryPage": {
+            "properties": {
+                "discoveryType": {
+                    "type": "string"
+                },
+                "paginator": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "keystore": {
+            "properties": {
+                "certificateName": {
+                    "description": "certificateName.description",
+                    "type": "string",
+                    "x-labelLocalizationKey": "certificateName.label",
+                    "x-rank": 0
+                },
+                "tenant": {
+                    "default": "admin",
+                    "description": "tenant.description",
+                    "type": "string",
+                    "x-labelLocalizationKey": "tenant.label",
+                    "x-rank": 1
+                }
+            },
+            "required": [
+                "certificateName"
+            ],
+            "type": "object",
+            "x-labelLocalizationKey": "keystore.label",
+            "x-primaryKey": [
+                "#/certificateName",
+                "#/tenant"
+            ]
+        }
+    },
+    "localizationResources": {
+        "en": {
+            "address": {
+                "label": "VMware NSX-ALB Address/Hostname"
+            },
+            "discovery": {
+                "tenantsLabel": "Tenant(s)",
+                "tenantsDescription": "A comma separated list of tenant names.",
+                "expiredCertificatesLabel": "Exclude expired certificates",
+                "excludeInactiveCertificates": "Exclude certificates that are not in use by a virtual service."
+            },
+            "port": {
+                "description": "No value is interpreted as 443",
+                "label": "Port"
+            },
+            "username": {
+                "label": "Username"
+            },
+            "password": {
+                "label": "Password",
+                "showPassword": "Show Password",
+                "hidePassword": "Hide Password"
+            },
+            "keystore": {
+                "label": "Certificate Information"
+            },
+            "binding": {
+                "label": "VMware Virtual Service Details"
+            },
+            "certificateName": {
+                "label": "Certificate Name",
+                "description": "How the certificate should appear on the VMware NSX-ALB"
+            },
+            "credentialId": {
+                "description": "Credentials need to be enabled or created, or you must have access to existing credentials.",
+                "label": "Credential"
+            },
+            "virtualServiceName": {
+                "label": "Virtual Service"
+            },
+            "tenant": {
+                "label": "Tenant",
+                "description": "No value is interpreted as the \"admin\" tenant"
+            },
+            "credentialType": {
+                "label": "Credential Type",
+                "shared": "Select Credentials",
+                "local": "Enter Credentials",
+                "description": "Credential types require additional licensing."
+            }
+        }
+    },
+    "hooks": {
+        "mapping": {
+            "configureInstallationEndpoint": {
+                "path": "/v1/configureinstallationendpoint",
+                "request": null,
+                "response": null
+            },
+            "discoverCertificates": {
+                "path": "/v1/discovercertificates",
+                "request": null,
+                "response": null
+            },
+            "getTargetConfiguration": {
+                "path": "/v1/gettargetconfiguration",
+                "request": null,
+                "response": null
+            },
+            "installCertificateBundle": {
+                "path": "/v1/installcertificatebundle",
+                "request": null,
+                "response": null
+            },
+            "testConnection": {
+                "path": "/v1/testconnection",
+                "request": null,
+                "response": null
+            }
+        },
+        "requestConverters": [
+            "arguments-decrypter"
+        ]
+    }
+}
