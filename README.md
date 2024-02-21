@@ -620,6 +620,7 @@ Comments in the aforementioned source code files describe both the common code t
 This machine connector includes a Makefile with targets for building the application.  This container image can be stored in your container registry to generate the final manifest file for creating or updating a connector. 
 
 Some of the Makefile targets are:
+- **help**: show available make targets
 - **build**: create an executable binary that can be executed in a container run within a vSatellite.  The target operating system is Linux and the architecture will be AMD64.
 - **test**: run the tests defined within the machine connector source code.
 - **image**: will use the included build/Dockerfile to create a container image.
