@@ -596,11 +596,11 @@ The messages collection contains one, but not more than maxResults, JSON documen
 ```
 
 # Code
-The applications main function can be found in cmd/vmware-avi-connector/main.go.  The function calls the cmd/vmware-avi-connector/app/app.go New function which startup and configuration code.
+The application's main function can be found in cmd/vmware-avi-connector/main.go.  The function calls the cmd/vmware-avi-connector/app/app.go ***New()*** function.
 
-The applications REST API handlers can be found in the internal/handler/web/web.go file.  The WebhookService interface is implemented by the WebhookServiceImpl defined in internal/app/vmware-avi/vmware_avi.go.  The REST API handlers use those implementations to fulfill each of the machine connector provisioning and discovery operations.
+The applications REST API handlers can be found in the internal/handler/web/web.go file.  The WebhookService interface is implemented by the WebhookServiceImpl defined in internal/app/vmware-avi/vmware_avi.go.  The REST API handlers use those implementations to fulfill each machine connector provisioning and discovery operations.
 
-The data structures that match the definitions in the manifest domainSchema can be found in the internal/app/domain subdirectory.  The JSON annotations defines the field names and must match the property names in the corresponding manifest.json properties definitions.
+The data structures that match the definitions in the manifest domainSchema can be found in the internal/app/domain subdirectory.  The JSON annotations define the field names and must match the property names in the corresponding manifest.json properties definitions.
 - certificate_bundle.go
 - connection.go
 - keystore.go
@@ -617,22 +617,22 @@ The code implementing the logic for the machine connector discovery operation ca
 Comments in the aforementioned source code files describe both the common code that can be used by most machine connectors and the code that is specific to interacting with a VMware AVI host.
 
 # Building
-This machine connector includes a Makefile with targets for building the application, a container image that can be stored in your container registry and for generating the final manifest file for creating or updating a connector. 
+This machine connector includes a Makefile with targets for building the application.  This container image can be stored in your container registry to generate the final manifest file for creating or updating a connector. 
 
 Some of the Makefile targets are:
-- build: create an executable binary that can be executed in a container run within a vSatellite.  The target operating system is Linux and the architecture will be AMD64.
-- test: run the tests defined within the machine connector source code.
-- image: will use the included build/Dockerfile to create a container image.
-- push: will use the included build/Dockerfile to create a container image and push the image to your container registry.
-- manifests: will use the manifest.json file to create:
-  - manifest.create.json: is an updated manifest.json file that includes the container registry image path.  The file content can be used to create a new machine connector for a tenant in TLS Protect Cloud.
-  - manifest.update.json: is an updated manifest.json file that includes the container registry image path.  The file content can be used to update an existing machine connector for a tenant in TLS Protect Cloud.
+- **build**: create an executable binary that can be executed in a container run within a vSatellite.  The target operating system is Linux and the architecture will be AMD64.
+- **test**: run the tests defined within the machine connector source code.
+- **image**: will use the included build/Dockerfile to create a container image.
+- **push**: will use the included build/Dockerfile to create a container image and push the image to your container registry.
+- **manifests**: will use the manifest.json file to create:
+  - **manifest.create.json**: is an updated manifest.json file that includes the container registry image path.  The file content can be used to create a new machine connector for a tenant in TLS Protect Cloud.
+  - **manifest.update.json**: is an updated manifest.json file that includes the container registry image path.  The file content can be used to update an existing machine connector for a tenant in TLS Protect Cloud.
 
 > **_NOTE_**: The API documentation for managing tenant machine connectors can be found on [Venafi Dev Central](https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins)
 
 > **_NOTE_**: You can use the TAG environment variable to override the default container image tag value of 'latest'.
 
-You can chain the targets together to clean, build and push in a single command:
+You can chain the targets together to clean, build, and push in a single command:
 
 ```text
 vmware-avi-connector % CONTAINER_REGISTRY=sample.io/dev-local TAG=demo make clean build push
@@ -671,7 +671,7 @@ vmware-avi-connector %
 ```
 
 # Testing
-To test the machine connector operations you can POST requests to the endpoints defined in the manifest.json hooks.mapping definition.  These endpoints must match the endpoints registered in the internal/handler/web/web.go RegisterHandlers function.
+To test the machine connector operations, you can POST requests to the endpoints defined in the manifest.json hooks.mapping definition.  These endpoints must match those registered in the internal/handler/web/web.go RegisterHandlers function.
 
 The body for POST must be a JSON document that matches the corresponding operations request structure.  For example, in this machine connector the hook.mapping path for ___testconnection___ is "/v1/testconnection".  The registered handler is implemented in the internal/app/vmware-avi/test_connection.go HandleTestConnection function.  The request structure for test connection is TestConnectionRequest:
 ```go
@@ -704,24 +704,24 @@ The "/v1/testconnection" body would then be:
 }
 ```
 
-> **_Note_**: The request body must contain all fields for the properties which are marked as required.  In the above example, the manifest.json domainSchema connection node properties definition for _port_ is an optional field with a default value.  When omitted from a request any property with a default should be validated or set by the machine connector code.
+> **_Note_**: The request body must contain all fields for the properties marked as required.  In the above example, the manifest.json domainSchema connection node properties definition for _port_ is an optional field with a default value.  When omitted from a request, any property with a default should be validated or set by the machine connector code.
 
-> **_Note_**: The field values in the body should not be encrypted.  When this sample machine connector is run a decryption middleware is added which decrypts the body, of a request, if the data encryption key pair is present.  When running locally no key pair is expected.  When running in a Venafi Satellite the encrypted body is decrypted by the middleware before being received by the handler function.
+> **_Note_**: The field values in the body should not be encrypted.  When this sample machine connector is run, a decryption middleware is added, which decrypts the body of a request if the data encryption key pair is present. When running locally, no key pair is expected. When running in a Venafi Satellite, the encrypted body is decrypted by the middleware before being received by the handler function.
 
-You can run the cmd/vmware-avi-connector/main.go main function in the debugger and set a breakpoint in internal/app/vmware-avi/test_connection.go HandleTestConnection function.  With the machine connector started you can send a POST operation to http://localhost:8080/v1/testconnection.  The web server started by  machine connector.
+You can run the cmd/vmware-avi-connector/main.go main function in the debugger and set a breakpoint in internal/app/vmware-avi/test_connection.go HandleTestConnection function.  With the machine connector started you can send a POST operation to http://localhost:8080/v1/testconnection.  The web server is started by a machine connector.
 
-> **_Note_**: The content-type header should be present with a value of application/json.
+> **_Note_**: The content-type header should have a value of application/json.
 
 # Deployment
 
-When you have completed creating and testing your machine connector you can deploy it exclusively for your tenant in TLS Protect Cloud.  No other tenants will have access to your connector.
+When you have completed creating and testing your machine connector, you can deploy it exclusively in your TLS Protect Cloud production environment. With a tenant-specific connector, tenants can develop their own personal connectors (that are inaccessible by other tenants). This gives you the confidence to ensure your connectors work properly in a production environment before you release them to your customers. For details, see the [Integrate connector into tenant environment](https://developer.venafi.com/tlsprotectcloud/docs/integrate-connector-into-tenant-environment) guide.
 
-To generate the final manifests for deploying to TLS Protect Cloud you can use ___make manifests___.  The manifests target will use the ___build___ and ___image___ targets to build the executable and the image.
+To generate the final manifests for deployment to TLS Protect Cloud you can use ___make manifests___.  The manifests target will use the ___build___ and ___image___ targets to build the executable and the image.
 
-To Create a machine connector for your tenant you can use the [Create a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins) REST API.  The body of the request should be the manifest.create.json.  Once the new machine connector has been created it will be assigned a persistent unique id.
+To Create a machine connector for your tenant you can use the [Create a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins) REST API.  The body of the request should be the manifest.create.json.  Once the new machine connector has been created it will be assigned a persistent unique ID.
 
-To Update an existing machine connector for your tenant you can use the [Update a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/patch-v1-plugins-id) REST API.  The id in the path should be the id assigned when the machine connector was created.
+To Update an existing machine connector for your tenant you can use the [Update a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/patch-v1-plugins-id) REST API.  The ID in the path should be the ID assigned when the machine connector was created.
 
-Additionally, you can use the [Disable a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins-id-exclusions) REST API to flag the machine connector as disabled.  Disabling a machine connector prevents new machines from being created using the disabled machine connector.  This can be useful to deploy you plugin, create one, or more, machine instances for testing and then disabling the machine connector to prevent additional machines from being creating during production testing.  You can use the [Remove plugin disablement](https://developer.venafi.com/tlsprotectcloud/reference/delete-v1-plugins-id-exclusions) REST API to re-enable your machine connector for use to create new machines.
+Additionally, you can use the [Disable a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins-id-exclusions) REST API to flag the machine connector as disabled.  Disabling a machine connector prevents new machines from being created using the disabled machine connector.  This can be useful to deploy your plugin, create one, or more, machine instances for testing, and then disable the machine connector to prevent additional machines from being created during production testing.  You can use the [Remove plugin disablement](https://developer.venafi.com/tlsprotectcloud/reference/delete-v1-plugins-id-exclusions) REST API to re-enable your machine connector to create new machines.
 
-Finally, you can use the [Delete a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/delete-v1-plugins-id) REST API to remove the machine connector from you TLS Protect Cloud tenant.  This API can only be used once all machines associated with the machine connector have been deleted.
+Finally, you can use the [Delete a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/delete-v1-plugins-id) REST API to remove the machine connector from your TLS Protect Cloud tenant.  This API can only be used once all machines associated with the machine connector have been deleted.
