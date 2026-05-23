@@ -36,7 +36,7 @@ func TestConfigure(t *testing.T) {
 
 		raw, err = json.Marshal(&ConfigureInstallationEndpointRequest{
 			Connection: &domain.Connection{
-				HostnameOrAddress: "localhost",
+				HostnameOrAddress: aviTestHost,
 				Password:          "password",
 				Port:              443,
 				Username:          "user",
@@ -85,7 +85,7 @@ func TestConfigure(t *testing.T) {
 			})
 
 		kacn := "installation.test.io"
-		kacURL := "https://localhost/api/virtualservice/" + kacn
+		kacURL := "https://avi-controller.example.com/api/virtualservice/" + kacn
 
 		mockClientServices.EXPECT().
 			GetSSLKeyAndCertificateByName(gomock.Any(), gomock.Any(), gomock.Any()).

@@ -288,7 +288,7 @@ func TestDiscovery(t *testing.T) {
 				Tenants:                     "admin",
 			},
 			Connection: &domain.Connection{
-				HostnameOrAddress: "localhost",
+				HostnameOrAddress: "avi-controller.example.com",
 				Password:          "password",
 				Username:          "user",
 			},
@@ -369,7 +369,7 @@ func TestDiscovery(t *testing.T) {
 				Tenants:                     "admin",
 			},
 			Connection: &domain.Connection{
-				HostnameOrAddress: "localhost",
+				HostnameOrAddress: "avi-controller.example.com",
 				Password:          "password",
 				Username:          "user",
 			},
@@ -488,7 +488,7 @@ func TestDiscovery(t *testing.T) {
 				Tenants:                     "admin,Venafi,Swordfish",
 			},
 			Connection: &domain.Connection{
-				HostnameOrAddress: "localhost",
+				HostnameOrAddress: "avi-controller.example.com",
 				Password:          "password",
 				Username:          "user",
 			},
@@ -640,7 +640,7 @@ func TestDiscovery(t *testing.T) {
 				Tenants:                     "admin,Venafi,Swordfish",
 			},
 			Connection: &domain.Connection{
-				HostnameOrAddress: "localhost",
+				HostnameOrAddress: "avi-controller.example.com",
 				Password:          "password",
 				Username:          "user",
 			},

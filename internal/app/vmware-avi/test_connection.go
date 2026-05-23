@@ -30,6 +30,17 @@ func (svc *WebhookServiceImpl) HandleTestConnection(c echo.Context) error {
 		return c.String(http.StatusBadRequest, fmt.Sprintf("failed to unmarshall json: %s", err.Error()))
 	}
 
+	if req.Connection == nil {
+		return c.String(http.StatusBadRequest, "missing required field: connection")
+	}
+
+	// Validate the connection to prevent SSRF (CWE-918): an attacker could otherwise supply an
+	// arbitrary hostnameOrAddress value to redirect outbound requests to internal services.
+	if err = req.Connection.Validate(); err != nil {
+		zap.L().Error("invalid connection parameters", zap.Error(err))
+		return c.String(http.StatusBadRequest, fmt.Sprintf("invalid connection: %s", err.Error()))
+	}
+
 	res := TestConnectionResponse{
 		Result: false,
 	}
