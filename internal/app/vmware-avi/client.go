@@ -2,8 +2,10 @@
 package vmwareavi
 
 import (
+	"crypto/tls"
 	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/venafi/vmware-avi-connector/internal/app/domain"
 	"github.com/vmware/alb-sdk/go/clients"
@@ -49,6 +51,17 @@ func NewVMwareAviClients() *VMwareAviClientsImpl {
 	return &VMwareAviClientsImpl{}
 }
 
+// newSecureTransport returns an HTTP transport with TLS certificate verification
+// enabled and a minimum TLS version of 1.2, overriding the alb-sdk default
+// which would otherwise disable certificate verification entirely.
+func newSecureTransport() *http.Transport {
+	return &http.Transport{
+		TLSClientConfig: &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		},
+	}
+}
+
 // Close will logout the client session
 func (c *VMwareAviClientsImpl) Close(client *domain.Client) {
 	if client == nil || client.Session == nil {
@@ -74,7 +87,7 @@ func (c *VMwareAviClientsImpl) Connect(client *domain.Client) error {
 
 	tc, err = clients.NewAviClient(client.Connection.HostnameOrAddress, client.Connection.Username,
 		session.SetPassword(client.Connection.Password),
-		session.SetInsecure)
+		session.SetTransport(newSecureTransport()))
 	if err != nil {
 		zap.L().Error("failed to connect to the VMware NSX-ALB host", zap.String("hostname", client.Connection.HostnameOrAddress), zap.Int("port", client.Connection.Port), zap.Error(err))
 		return fmt.Errorf("failed to connect: %w", err)
@@ -98,7 +111,7 @@ func (c *VMwareAviClientsImpl) Connect(client *domain.Client) error {
 		session.SetPassword(client.Connection.Password),
 		session.SetTenant(client.Tenant),
 		session.SetVersion(version),
-		session.SetInsecure)
+		session.SetTransport(newSecureTransport()))
 	if err != nil {
 		zap.L().Error("failed to connect to the VMware NSX-ALB host with tenant", zap.String("hostname", client.Connection.HostnameOrAddress), zap.Int("port", client.Connection.Port), zap.String("tenant", client.Tenant), zap.Error(err))
 		return fmt.Errorf(`failed to connect with tenant "%s": %w`, client.Tenant, err)
