@@ -36,7 +36,7 @@ func TestConfigure(t *testing.T) {
 
 		raw, err = json.Marshal(&ConfigureInstallationEndpointRequest{
 			Connection: &domain.Connection{
-				HostnameOrAddress: "localhost",
+				HostnameOrAddress: "avi-controller.example.com",
 				Password:          "password",
 				Port:              443,
 				Username:          "user",

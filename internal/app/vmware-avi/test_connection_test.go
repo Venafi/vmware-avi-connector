@@ -49,7 +49,7 @@ func TestConnectionTest(t *testing.T) {
 
 		raw, err = json.Marshal(&TestConnectionRequest{
 			Connection: &domain.Connection{
-				HostnameOrAddress: "localhost",
+				HostnameOrAddress: "avi-controller.example.com",
 				Password:          "password",
 				Port:              443,
 				Username:          "user",

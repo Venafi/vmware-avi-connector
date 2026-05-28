@@ -42,6 +42,17 @@ func (svc *WebhookServiceImpl) HandleInstallCertificateBundle(c echo.Context) er
 		return c.String(http.StatusBadRequest, fmt.Sprintf("failed to unmarshall json: %s", err.Error()))
 	}
 
+	if req.Connection == nil {
+		zap.L().Error("invalid request, connection is required")
+		return c.String(http.StatusBadRequest, "connection is required")
+	}
+
+	// Validate hostnameOrAddress to prevent SSRF (CWE-918).
+	if err := ValidateHostnameOrAddress(req.Connection.HostnameOrAddress); err != nil {
+		zap.L().Error("invalid hostnameOrAddress", zap.String("hostnameOrAddress", req.Connection.HostnameOrAddress), zap.Error(err))
+		return c.String(http.StatusBadRequest, fmt.Sprintf("invalid hostnameOrAddress: %s", err.Error()))
+	}
+
 	var err error
 
 	client := svc.ClientServices.NewClient(req.Connection, req.InstallationKeystore.Tenant)

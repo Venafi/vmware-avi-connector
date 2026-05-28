@@ -41,6 +41,17 @@ func (svc *DiscoveryService) DiscoverCertificates(c echo.Context) error {
 		return c.String(http.StatusBadRequest, fmt.Sprintf("failed to unmarshall request json: %s", err.Error()))
 	}
 
+	if req.Connection == nil {
+		zap.L().Error("invalid request, connection is required")
+		return c.String(http.StatusBadRequest, "connection is required")
+	}
+
+	// Validate hostnameOrAddress to prevent SSRF (CWE-918).
+	if err = vmwareavi.ValidateHostnameOrAddress(req.Connection.HostnameOrAddress); err != nil {
+		zap.L().Error("invalid hostnameOrAddress", zap.String("hostnameOrAddress", req.Connection.HostnameOrAddress), zap.Error(err))
+		return c.String(http.StatusBadRequest, fmt.Sprintf("invalid hostnameOrAddress: %s", err.Error()))
+	}
+
 	var tenants TenantNames
 	if len(req.Configuration.Tenants) == 0 {
 		tenants, err = svc.getAllTenants(req.Connection)
