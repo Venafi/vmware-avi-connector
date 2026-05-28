@@ -11,10 +11,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-jose/go-jose/v3"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
-	"gopkg.in/square/go-jose.v2"
 )
 
 // WebhookService interfaces for the connector operation functions
