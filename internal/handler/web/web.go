@@ -88,7 +88,9 @@ func addPayloadEncryptionMiddleware(g *echo.Group) {
 	g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			req := c.Request()
-			body, err := ioutil.ReadAll(req.Body)
+			// Limit request body size to prevent decompression bomb attacks (CWE-409)
+			limitedReader := io.LimitReader(req.Body, 2<<20) // 2MB limit
+			body, err := ioutil.ReadAll(limitedReader)
 			if err != nil {
 				return err
 			}
@@ -99,6 +101,10 @@ func addPayloadEncryptionMiddleware(g *echo.Group) {
 			decrypted, err := object.Decrypt(pk)
 			if err != nil {
 				return err
+			}
+			// Enforce decompression size limit
+			if len(decrypted) > 10<<20 { // 10MB decompressed limit
+				return echo.NewHTTPError(http.StatusRequestEntityTooLarge, "decompressed payload too large")
 			}
 			req.Body = io.NopCloser(bytes.NewReader(decrypted))
 			return next(c)
