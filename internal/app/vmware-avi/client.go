@@ -4,6 +4,8 @@ package vmwareavi
 import (
 	"errors"
 	"fmt"
+	"net"
+	"strings"
 
 	"github.com/venafi/vmware-avi-connector/internal/app/domain"
 	"github.com/vmware/alb-sdk/go/clients"
@@ -49,6 +51,58 @@ func NewVMwareAviClients() *VMwareAviClientsImpl {
 	return &VMwareAviClientsImpl{}
 }
 
+// validateHostnameOrAddress checks if the hostname/address is safe to prevent SSRF
+func validateHostnameOrAddress(hostnameOrAddress string) error {
+	if hostnameOrAddress == "" {
+		return errors.New("hostname or address cannot be empty")
+	}
+
+	// Strip port if present for validation
+	host := hostnameOrAddress
+	if strings.Contains(host, ":") {
+		var err error
+		host, _, err = net.SplitHostPort(hostnameOrAddress)
+		if err != nil {
+			// If SplitHostPort fails, try parsing as-is (might be IPv6 without port)
+			host = hostnameOrAddress
+		}
+	}
+
+	// Try to parse as IP address
+	ip := net.ParseIP(host)
+	if ip != nil {
+		// Block loopback addresses
+		if ip.IsLoopback() {
+			return errors.New("loopback addresses are not allowed")
+		}
+		// Block private IP ranges
+		if ip.IsPrivate() {
+			return errors.New("private IP addresses are not allowed")
+		}
+		// Block link-local addresses
+		if ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() {
+			return errors.New("link-local addresses are not allowed")
+		}
+		// Block unspecified and multicast
+		if ip.IsUnspecified() || ip.IsMulticast() {
+			return errors.New("unspecified or multicast addresses are not allowed")
+		}
+		return nil
+	}
+
+	// Validate as hostname
+	host = strings.ToLower(host)
+	// Block localhost and common SSRF targets
+	blockedHosts := []string{"localhost", "metadata.google.internal", "169.254.169.254"}
+	for _, blocked := range blockedHosts {
+		if host == blocked || strings.HasSuffix(host, "."+blocked) {
+			return fmt.Errorf("hostname %q is not allowed", host)
+		}
+	}
+
+	return nil
+}
+
 // Close will logout the client session
 func (c *VMwareAviClientsImpl) Close(client *domain.Client) {
 	if client == nil || client.Session == nil {
@@ -67,6 +121,12 @@ func (c *VMwareAviClientsImpl) Close(client *domain.Client) {
 // Connect will attempt to create a new client session and connect to the VMware AVI host
 func (c *VMwareAviClientsImpl) Connect(client *domain.Client) error {
 	var err error
+
+	// Validate hostname/address to prevent SSRF attacks
+	if err = validateHostnameOrAddress(client.Connection.HostnameOrAddress); err != nil {
+		zap.L().Error("invalid hostname or address", zap.String("hostname", client.Connection.HostnameOrAddress), zap.Error(err))
+		return fmt.Errorf("invalid hostname or address: %w", err)
+	}
 
 	zap.L().Info("attempting to connect to VMware NSX-ALB", zap.String("address", client.Connection.HostnameOrAddress), zap.Int("port", client.Connection.Port))
 
