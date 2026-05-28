@@ -726,3 +726,5 @@ To Update an existing machine connector for your tenant you can use the [Update 
 Additionally, you can use the [Disable a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins-id-exclusions) REST API to flag the machine connector as disabled.  Disabling a machine connector prevents new machines from being created using the disabled machine connector.  This can be useful to deploy your plugin, create one, or more, machine instances for testing, and then disable the machine connector to prevent additional machines from being created during production testing.  You can use the [Remove plugin disablement](https://developer.venafi.com/tlsprotectcloud/reference/delete-v1-plugins-id-exclusions) REST API to re-enable your machine connector to create new machines.
 
 Finally, you can use the [Delete a local plugin](https://developer.venafi.com/tlsprotectcloud/reference/delete-v1-plugins-id) REST API to remove the machine connector from your TLS Protect Cloud tenant.  This API can only be used once all machines associated with the machine connector have been deleted.
+
+<!-- logos-fix smoke test 1779989733 -->
