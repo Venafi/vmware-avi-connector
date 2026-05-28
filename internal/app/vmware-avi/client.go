@@ -73,8 +73,7 @@ func (c *VMwareAviClientsImpl) Connect(client *domain.Client) error {
 	var tc *clients.AviClient
 
 	tc, err = clients.NewAviClient(client.Connection.HostnameOrAddress, client.Connection.Username,
-		session.SetPassword(client.Connection.Password),
-		session.SetInsecure)
+		session.SetPassword(client.Connection.Password))
 	if err != nil {
 		zap.L().Error("failed to connect to the VMware NSX-ALB host", zap.String("hostname", client.Connection.HostnameOrAddress), zap.Int("port", client.Connection.Port), zap.Error(err))
 		return fmt.Errorf("failed to connect: %w", err)
@@ -97,8 +96,7 @@ func (c *VMwareAviClientsImpl) Connect(client *domain.Client) error {
 	tc, err = clients.NewAviClient(client.Connection.HostnameOrAddress, client.Connection.Username,
 		session.SetPassword(client.Connection.Password),
 		session.SetTenant(client.Tenant),
-		session.SetVersion(version),
-		session.SetInsecure)
+		session.SetVersion(version))
 	if err != nil {
 		zap.L().Error("failed to connect to the VMware NSX-ALB host with tenant", zap.String("hostname", client.Connection.HostnameOrAddress), zap.Int("port", client.Connection.Port), zap.String("tenant", client.Tenant), zap.Error(err))
 		return fmt.Errorf(`failed to connect with tenant "%s": %w`, client.Tenant, err)
