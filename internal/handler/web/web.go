@@ -58,7 +58,9 @@ func RegisterHandlers(e *echo.Echo, whService WebhookService) error {
 	})
 
 	g := e.Group("/v1")
-	addPayloadEncryptionMiddleware(g)
+	if err := addPayloadEncryptionMiddleware(g); err != nil {
+		return err
+	}
 	g.POST("/testconnection", whService.HandleTestConnection)
 	g.POST("/gettargetconfiguration", whService.HandleGetTargetConfiguration)
 	g.POST("/configureinstallationendpoint", whService.HandleConfigureInstallationEndpoint)
@@ -68,21 +70,21 @@ func RegisterHandlers(e *echo.Echo, whService WebhookService) error {
 	return nil
 }
 
-func addPayloadEncryptionMiddleware(g *echo.Group) {
+func addPayloadEncryptionMiddleware(g *echo.Group) error {
 	privateKeyPemData, err := os.ReadFile("/keys/payload-encryption-key.pem")
 	if err != nil {
 		zap.L().Error("payload encryption key not found or readable", zap.Error(err))
-		return
+		return err
 	}
 	p, _ := pem.Decode(privateKeyPemData)
 	if p == nil {
 		zap.L().Error("payload encryption key not in PEM format")
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, "payload encryption key not in PEM format")
 	}
 	pk, err := x509.ParsePKCS1PrivateKey(p.Bytes)
 	if err != nil {
 		zap.L().Error("payload encryption key not properly encoded", zap.Error(err))
-		return
+		return err
 	}
 	zap.L().Info("adding payload encryption middleware")
 	g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -104,4 +106,5 @@ func addPayloadEncryptionMiddleware(g *echo.Group) {
 			return next(c)
 		}
 	})
+	return nil
 }
