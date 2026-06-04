@@ -1,13 +1,13 @@
 module github.com/venafi/vmware-avi-connector
 
-go 1.25.6
+go 1.25.0
 
 require (
 	github.com/go-jose/go-jose/v4 v4.1.4
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/stretchr/testify v1.8.4
-	github.com/vmware/alb-sdk v0.0.0-20260603091817-e260b7e17ff7
+	github.com/vmware/alb-sdk v0.0.0-20240112090735-d9097a8c6854
 	go.uber.org/fx v1.20.1
 	go.uber.org/mock v0.4.0
 	go.uber.org/zap v1.26.0
@@ -16,7 +16,7 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/golang/glog v1.2.5 // indirect
+	github.com/golang/glog v1.2.4 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
