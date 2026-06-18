@@ -7,12 +7,12 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/go-jose/go-jose/v4"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
@@ -58,6 +58,7 @@ func RegisterHandlers(e *echo.Echo, whService WebhookService) error {
 	})
 
 	g := e.Group("/v1")
+	g.Use(middleware.BodyLimit("1M"))
 	if err := addPayloadEncryptionMiddleware(g); err != nil {
 		return err
 	}
@@ -90,7 +91,7 @@ func addPayloadEncryptionMiddleware(g *echo.Group) error {
 	g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			req := c.Request()
-			body, err := ioutil.ReadAll(req.Body)
+			body, err := io.ReadAll(req.Body)
 			if err != nil {
 				return err
 			}
