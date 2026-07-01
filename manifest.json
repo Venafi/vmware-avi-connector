@@ -131,7 +131,8 @@
                 "hostnameOrAddress": {
                     "type": "string",
                     "x-labelLocalizationKey": "address.label",
-                    "x-rank": 0
+                    "x-rank": 0,
+                    "pattern": "^[A-Za-z0-9.\\-]+(:[0-9]{1,5})?$"
                 },
                 "password": {
                     "type": "string",
