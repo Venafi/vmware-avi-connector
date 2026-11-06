@@ -9,7 +9,7 @@ Sample TLS Protect Cloud machine connector
 Below are the minimal dependency versions that are required to build:
 - GNU Make 3.81
 - `jq` - commandline JSON processor [version 1.6]
-- go version go1.20
+- go version go1.27.3
 - Docker version 24.0.7
 - `golangci-lint` version 1.52.2
 
