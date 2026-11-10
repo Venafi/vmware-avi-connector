@@ -3,7 +3,7 @@ module github.com/venafi/vmware-avi-connector
 go 1.27.3
 
 require (
-	github.com/go-jose/go-jose/v4 v4.1.4
+	github.com/go-jose/go-jose/v4 v4.1.9
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.16.3
 	github.com/stretchr/testify v1.11.1
