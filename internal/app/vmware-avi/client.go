@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:generate go run go.uber.org/mock/mockgen -source ./client.go -destination=./mocks/mock_client.go -package=mocks
+//go:generate go tool mockgen -source ./client.go -destination=./mocks/mock_client.go -package=mocks
 
 // ClientServices interfaces for interacting with VMware AVI
 type ClientServices interface {
